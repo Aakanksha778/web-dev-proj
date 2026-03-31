@@ -1,20 +1,24 @@
 ﻿<template>
-  <div class="card page-card p-4">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <div>
-        <p class="text-uppercase text-muted mb-1 small">{{ title }}</p>
-        <h3 class="mb-0">{{ value }}</h3>
+  <div class="summary-card">
+    <div class="summary-card-top">
+      <div class="summary-copy">
+        <p class="summary-label">{{ title }}</p>
+        <h3 class="summary-value">{{ value }}</h3>
       </div>
-      <div class="icon-box bg-light text-primary rounded-circle d-flex align-items-center justify-content-center">
-        <span class="fs-5">{{ icon }}</span>
+
+      <div class="summary-icon-wrap">
+        <span class="summary-icon">{{ icon }}</span>
       </div>
     </div>
-    <p class="mb-0 text-muted">{{ subtitle }}</p>
+
+    <div class="summary-bottom">
+      <p class="summary-subtitle">{{ subtitle }}</p>
+    </div>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   title: String,
   value: String,
   subtitle: String,

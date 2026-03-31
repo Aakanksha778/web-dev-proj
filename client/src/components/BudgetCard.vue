@@ -1,24 +1,36 @@
 ﻿<template>
-  <div class="card page-card p-4">
-    <div class="d-flex justify-content-between align-items-start mb-3">
+  <div class="budget-goal-card budget-card-shell">
+    <div class="budget-goal-top">
       <div>
-        <h5 class="mb-1">{{ title }}</h5>
-        <p class="text-muted mb-0">{{ category }}</p>
+        <p class="budget-goal-kicker">Budget category</p>
+        <h3 class="budget-goal-title">{{ title }}</h3>
+        <p class="budget-goal-meta">{{ category }}</p>
       </div>
-      <span class="badge bg-secondary badge-pill">{{ progress }}%</span>
+
+      <span class="budget-progress-badge">
+        {{ progress }}%
+      </span>
     </div>
-    <div class="progress-bar-custom mb-3">
-      <span :style="{ width: progress + '%' }"></span>
+
+    <div class="budget-progress-track">
+      <span class="budget-progress-fill" :style="{ width: progress + '%' }"></span>
     </div>
-    <div class="d-flex justify-content-between text-muted small">
-      <span>{{ used }} spent</span>
-      <span>{{ remaining }} left</span>
+
+    <div class="budget-goal-stats">
+      <div>
+        <span>Spent</span>
+        <strong>{{ used }}</strong>
+      </div>
+      <div>
+        <span>Remaining</span>
+        <strong>{{ remaining }}</strong>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   title: String,
   category: String,
   progress: Number,

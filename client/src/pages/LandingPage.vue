@@ -1,54 +1,178 @@
 ﻿<template>
-  <section class="hero-card">
-    <div class="hero-grid align-items-center">
-      <div>
-        <p class="badge bg-primary text-white mb-3">Personal finance made simple</p>
-        <h1>Turn your spending into smart saving.</h1>
-        <p class="text-muted">Track income, manage budgets, monitor financial goals and explore personalized insights with a modern dashboard experience.</p>
-        <div class="mt-4 d-flex flex-wrap gap-3">
-          <router-link class="btn btn-brand" to="/register">Start free</router-link>
-          <router-link class="btn btn-outline-secondary" to="/login">View demo</router-link>
-        </div>
-      </div>
-      <div class="feature-list">
-        <div class="feature-card">
-          <h5>Organize budgets</h5>
-          <p class="text-muted mb-0">Plan monthly spending and avoid surprises with clear budget summaries.</p>
-        </div>
-        <div class="feature-card">
-          <h5>Monitor transactions</h5>
-          <p class="text-muted mb-0">See all income and expenses in one place with payment status and categories.</p>
-        </div>
-        <div class="feature-card">
-          <h5>Reach your goals</h5>
-          <p class="text-muted mb-0">Save toward your goals with progress breakdowns and smart targets.</p>
-        </div>
-        <div class="feature-card">
-          <h5>Actionable insights</h5>
-          <p class="text-muted mb-0">Discover trends across spending categories and keep budgets on track.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+  <section class="landing-page">
+    <section class="hero-section">
+      <div class="hero-glow hero-glow--one"></div>
+      <div class="hero-glow hero-glow--two"></div>
 
-  <section class="row g-4 mt-4">
-    <div class="col-12 col-lg-4">
-      <div class="card page-card p-4">
-        <h3>Trusted insights</h3>
-        <p class="text-muted">Get prioritized spending recommendations the moment you log in.</p>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            Smarter money habits start here
+          </div>
+
+          <h1 class="hero-title">
+            Budget with clarity.
+            <span>Grow with purpose.</span>
+          </h1>
+
+          <p class="hero-subtitle">
+            BUDMON helps students and families track spending, manage budgets,
+            and build stronger savings habits without the overwhelm.
+          </p>
+
+          <div class="hero-actions">
+            <router-link class="btn btn-primary hero-btn" to="/register">
+              Get started free
+            </router-link>
+            <router-link class="btn btn-ghost hero-btn" to="/dashboard">
+              Explore dashboard
+            </router-link>
+          </div>
+
+          <div class="hero-proof-row">
+            <div class="proof-pill">
+              <strong>Simple budgets</strong>
+              <span>clear category tracking</span>
+            </div>
+            <div class="proof-pill">
+              <strong>Goal-based</strong>
+              <span>steady savings progress</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual-shell">
+          <div class="hero-main-panel">
+            <div class="hero-panel-top">
+              <div>
+                <p class="hero-panel-label">Monthly budget health</p>
+                <h3>$2,940 left</h3>
+              </div>
+              <span class="hero-panel-chip">On track</span>
+            </div>
+
+            <div class="hero-mini-chart">
+              <div class="hero-bars">
+                <span style="height: 38%"></span>
+                <span style="height: 56%"></span>
+                <span style="height: 44%"></span>
+                <span style="height: 72%"></span>
+                <span style="height: 63%"></span>
+                <span style="height: 88%"></span>
+              </div>
+            </div>
+
+            <div class="hero-spend-grid">
+              <div class="hero-spend-card">
+                <p>Needs</p>
+                <strong>$1,420</strong>
+              </div>
+              <div class="hero-spend-card">
+                <p>Wants</p>
+                <strong>$620</strong>
+              </div>
+              <div class="hero-spend-card">
+                <p>Savings</p>
+                <strong>$900</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="floating-stat floating-stat--one">
+            <span>Emergency fund</span>
+            <strong>56% complete</strong>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="col-12 col-lg-4">
-      <div class="card page-card p-4">
-        <h3>Easy budgets</h3>
-        <p class="text-muted">Create your budget categories and watch actual spending update automatically.</p>
+    </section>
+
+    <section class="landing-strip">
+      <div class="landing-strip-card">
+        <p class="landing-strip-label">Why BUDMON works</p>
+        <h2>Built to make budgeting feel clean, clear, and actually useful.</h2>
       </div>
-    </div>
-    <div class="col-12 col-lg-4">
-      <div class="card page-card p-4">
-        <h3>Goal driven</h3>
-        <p class="text-muted">Stay motivated with savings milestones and progress tracking.</p>
+    </section>
+
+    <section class="landing-features">
+      <div class="section-heading">
+        <p class="section-kicker">Features</p>
+        <h2>Everything you need to stay in control</h2>
+        <p class="section-subtitle">
+          A simpler way to understand spending, shape better habits, and stay focused on your goals.
+        </p>
       </div>
-    </div>
+
+      <div class="landing-feature-grid landing-feature-grid--three">
+        <article class="landing-feature-card featured-card">
+          <div class="feature-icon">📊</div>
+          <h3>Live budget visibility</h3>
+          <p>
+            See how much room you have left in each category before spending gets off track.
+          </p>
+        </article>
+
+        <article class="landing-feature-card">
+          <div class="feature-icon">💳</div>
+          <h3>Clear transaction tracking</h3>
+          <p>
+            Keep all spending in one place with a layout that makes patterns easier to understand.
+          </p>
+        </article>
+
+        <article class="landing-feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>Goal-focused savings</h3>
+          <p>
+            Turn savings targets into visible progress that helps you stay motivated over time.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="how-it-works-section">
+      <div class="section-heading">
+        <p class="section-kicker">How it works</p>
+        <h2>Simple flow. Better habits.</h2>
+      </div>
+
+      <div class="how-grid">
+        <div class="how-card">
+          <span class="how-number">01</span>
+          <h3>Set your budgets</h3>
+          <p>Create monthly categories that reflect how you actually spend.</p>
+        </div>
+
+        <div class="how-card">
+          <span class="how-number">02</span>
+          <h3>Track activity</h3>
+          <p>Monitor transactions and understand where your money is really going.</p>
+        </div>
+
+        <div class="how-card">
+          <span class="how-number">03</span>
+          <h3>Grow your goals</h3>
+          <p>Use progress visuals to stay motivated and move steadily toward savings targets.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-cta-section">
+      <div class="landing-cta-card">
+        <p class="section-kicker">Start today</p>
+        <h2>Take control of your money with a dashboard that actually helps.</h2>
+        <p>
+          Organize budgets, monitor spending, and move toward your goals with more confidence.
+        </p>
+        <div class="hero-actions">
+          <router-link class="btn btn-primary hero-btn" to="/register">
+            Create account
+          </router-link>
+          <router-link class="btn btn-ghost hero-btn" to="/login">
+            Sign in
+          </router-link>
+        </div>
+      </div>
+    </section>
   </section>
 </template>

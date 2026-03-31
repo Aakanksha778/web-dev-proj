@@ -1,21 +1,27 @@
 ﻿<template>
-  <div class="card page-card p-4">
-    <div class="d-flex justify-content-between align-items-start mb-3">
+  <div class="budget-goal-card goal-card-shell">
+    <div class="budget-goal-top">
       <div>
-        <h5 class="mb-1">{{ title }}</h5>
-        <p class="text-muted mb-0">Target: {{ target }}</p>
+        <p class="budget-goal-kicker">Savings goal</p>
+        <h3 class="budget-goal-title">{{ title }}</h3>
+        <p class="budget-goal-meta">Target: {{ target }}</p>
       </div>
-      <span class="badge bg-primary badge-pill">{{ progress }}%</span>
+
+      <span class="budget-progress-badge">
+        {{ progress }}%
+      </span>
     </div>
-    <div class="progress-bar-custom mb-3">
-      <span :style="{ width: progress + '%' }"></span>
+
+    <div class="budget-progress-track">
+      <span class="budget-progress-fill goal-progress-fill" :style="{ width: progress + '%' }"></span>
     </div>
-    <p class="mb-0 text-muted">{{ description }}</p>
+
+    <p class="goal-description">{{ description }}</p>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   title: String,
   target: String,
   progress: Number,

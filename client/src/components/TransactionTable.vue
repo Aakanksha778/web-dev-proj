@@ -1,33 +1,61 @@
 ﻿<template>
-  <div class="card page-card p-4">
-    <div class="d-flex align-items-center justify-content-between mb-4">
+  <div class="transaction-card">
+    <div class="transaction-card-header">
       <div>
-        <h2 class="h5 mb-1">Recent Transactions</h2>
-        <p class="text-muted mb-0">Track expenses and income at a glance.</p>
+        <p class="panel-kicker">Activity</p>
+        <h2 class="transaction-title">Recent Transactions</h2>
+        <p class="transaction-subtitle">Track expenses and income at a glance.</p>
       </div>
-      <button class="btn btn-brand btn-sm">Add transaction</button>
+
+      <button class="btn btn-primary btn-sm transaction-add-btn">
+        Add transaction
+      </button>
     </div>
-    <div class="table-responsive">
-      <table class="table align-middle mb-0">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Category</th>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="txn in transactions" :key="txn.id">
-            <td>{{ txn.description }}</td>
-            <td>{{ txn.category }}</td>
-            <td>{{ txn.date }}</td>
-            <td :class="txn.type === 'expense' ? 'text-danger' : 'text-success'">{{ txn.amount }}</td>
-            <td><span :class="['status-pill', txn.statusClass]">{{ txn.status }}</span></td>
-          </tr>
-        </tbody>
-      </table>
+
+    <div class="transaction-table-wrap">
+      <div class="table-responsive">
+        <table class="table align-middle mb-0 transaction-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th class="text-end">Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr v-for="txn in transactions" :key="txn.id">
+              <td>
+                <div class="transaction-item-cell">
+                  <div class="transaction-dot" :class="txn.type === 'expense' ? 'expense-dot' : 'income-dot'"></div>
+                  <span class="transaction-item-name">{{ txn.description }}</span>
+                </div>
+              </td>
+
+              <td>
+                <span class="transaction-category">{{ txn.category }}</span>
+              </td>
+
+              <td class="transaction-date">{{ txn.date }}</td>
+
+              <td
+                class="text-end transaction-amount"
+                :class="txn.type === 'expense' ? 'amount-negative' : 'amount-positive'"
+              >
+                {{ txn.amount }}
+              </td>
+
+              <td>
+                <span :class="['status-pill', txn.statusClass]">
+                  {{ txn.status }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
