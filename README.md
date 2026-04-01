@@ -1,9 +1,9 @@
-BUDMON – Personal Finance & Budgeting Web App
+CentSora – Personal Finance & Budgeting Web App
 =============================================
 
 Overview
 --------
-BUDMON is a personal finance and budgeting web application that helps users track income, expenses, category budgets, and savings goals. The app also includes dashboard visualizations and a trusted approval feature for extra spending requests.
+CentSora is a personal finance and budgeting web application that helps users track income, expenses, category budgets, and savings goals. The app also includes dashboard visualizations and a trusted approval feature for extra spending requests.
 
 Main planned features:
 - Landing page

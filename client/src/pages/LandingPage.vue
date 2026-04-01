@@ -17,8 +17,8 @@
           </h1>
 
           <p class="hero-subtitle">
-            BUDMON helps students and families track spending, manage budgets,
-            and build stronger savings habits without the overwhelm.
+            CentSora helps students and families track spending, build healthier habits,
+            and stay organized with a budgeting experience that feels calm, clear, and easy to keep up with.
           </p>
 
           <div class="hero-actions">
@@ -30,15 +30,10 @@
             </router-link>
           </div>
 
-          <div class="hero-proof-row">
-            <div class="proof-pill">
-              <strong>Simple budgets</strong>
-              <span>clear category tracking</span>
-            </div>
-            <div class="proof-pill">
-              <strong>Goal-based</strong>
-              <span>steady savings progress</span>
-            </div>
+          <div class="hero-trust-line">
+            <span>No spreadsheets</span>
+            <span>No overwhelm</span>
+            <span>Just clarity</span>
           </div>
         </div>
 
@@ -69,12 +64,12 @@
                 <strong>$1,420</strong>
               </div>
               <div class="hero-spend-card">
-                <p>Wants</p>
-                <strong>$620</strong>
-              </div>
-              <div class="hero-spend-card">
                 <p>Savings</p>
                 <strong>$900</strong>
+              </div>
+              <div class="hero-spend-card hero-spend-card--wide">
+                <p>Weekly insight</p>
+                <strong>Friday is your highest spending day</strong>
               </div>
             </div>
           </div>
@@ -87,20 +82,10 @@
       </div>
     </section>
 
-    <section class="landing-strip">
-      <div class="landing-strip-card">
-        <p class="landing-strip-label">Why BUDMON works</p>
-        <h2>Built to make budgeting feel clean, clear, and actually useful.</h2>
-      </div>
-    </section>
-
     <section class="landing-features">
       <div class="section-heading">
         <p class="section-kicker">Features</p>
-        <h2>Everything you need to stay in control</h2>
-        <p class="section-subtitle">
-          A simpler way to understand spending, shape better habits, and stay focused on your goals.
-        </p>
+        <h2>Clean budgeting tools that actually help you stay in control</h2>
       </div>
 
       <div class="landing-feature-grid landing-feature-grid--three">
@@ -108,7 +93,7 @@
           <div class="feature-icon">📊</div>
           <h3>Live budget visibility</h3>
           <p>
-            See how much room you have left in each category before spending gets off track.
+            See how much room is left in each category before spending starts to slip off track.
           </p>
         </article>
 
@@ -116,7 +101,7 @@
           <div class="feature-icon">💳</div>
           <h3>Clear transaction tracking</h3>
           <p>
-            Keep all spending in one place with a layout that makes patterns easier to understand.
+            Keep spending organized in one place with a layout that makes patterns easy to understand.
           </p>
         </article>
 
@@ -124,7 +109,7 @@
           <div class="feature-icon">🎯</div>
           <h3>Goal-focused savings</h3>
           <p>
-            Turn savings targets into visible progress that helps you stay motivated over time.
+            Turn savings goals into visible progress that keeps you motivated and moving forward.
           </p>
         </article>
       </div>
@@ -134,25 +119,28 @@
       <div class="section-heading">
         <p class="section-kicker">How it works</p>
         <h2>Simple flow. Better habits.</h2>
+        <p class="section-subtitle">
+          A calm routine that helps you understand where your money is going and what to do next.
+        </p>
       </div>
 
       <div class="how-grid">
         <div class="how-card">
           <span class="how-number">01</span>
           <h3>Set your budgets</h3>
-          <p>Create monthly categories that reflect how you actually spend.</p>
+          <p>Create categories that reflect how you actually spend each month.</p>
         </div>
 
         <div class="how-card">
           <span class="how-number">02</span>
           <h3>Track activity</h3>
-          <p>Monitor transactions and understand where your money is really going.</p>
+          <p>Monitor transactions clearly and understand where your money is really going.</p>
         </div>
 
         <div class="how-card">
           <span class="how-number">03</span>
           <h3>Grow your goals</h3>
-          <p>Use progress visuals to stay motivated and move steadily toward savings targets.</p>
+          <p>Stay motivated with progress visuals that make saving feel more rewarding.</p>
         </div>
       </div>
     </section>
@@ -160,9 +148,9 @@
     <section class="landing-cta-section">
       <div class="landing-cta-card">
         <p class="section-kicker">Start today</p>
-        <h2>Take control of your money with a dashboard that actually helps.</h2>
+        <h2>Take control of your money with a dashboard that feels helpful, not heavy.</h2>
         <p>
-          Organize budgets, monitor spending, and move toward your goals with more confidence.
+          Organize budgets, monitor spending, and build stronger savings habits with more confidence.
         </p>
         <div class="hero-actions">
           <router-link class="btn btn-primary hero-btn" to="/register">

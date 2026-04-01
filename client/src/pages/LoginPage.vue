@@ -3,10 +3,10 @@
     <div class="auth-shell">
       <div class="auth-showcase">
         <div class="auth-brand-row">
-          <img :src="logo" alt="BUDMON logo" class="auth-logo" />
+          <img :src="logo" alt="CentSora logo" class="auth-logo" />
           <div>
             <p class="auth-kicker">Welcome back</p>
-            <h1>BUDMON</h1>
+            <h1>CentSora</h1>
           </div>
         </div>
 

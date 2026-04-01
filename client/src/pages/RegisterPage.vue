@@ -3,10 +3,10 @@
     <div class="auth-shell">
       <div class="auth-showcase">
         <div class="auth-brand-row">
-          <img :src="logo" alt="BUDMON logo" class="auth-logo" />
+          <img :src="logo" alt="CentSora logo" class="auth-logo" />
           <div>
             <p class="auth-kicker">Create your account</p>
-            <h1>BUDMON</h1>
+            <h1>CentSora</h1>
           </div>
         </div>
 
@@ -49,7 +49,7 @@
       <div class="auth-form-panel">
         <div class="auth-form-card">
           <p class="auth-form-kicker">Register</p>
-          <h2 class="auth-form-title">Create your BUDMON account</h2>
+          <h2 class="auth-form-title">Create your CentSora account</h2>
           <p class="auth-form-subtitle">
             A secure, simple place to manage money and move toward your goals.
           </p>
