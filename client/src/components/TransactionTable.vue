@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="transaction-card">
     <div class="transaction-card-header">
       <div>
@@ -6,13 +6,18 @@
         <h2 class="transaction-title">Recent Transactions</h2>
         <p class="transaction-subtitle">Track expenses and income at a glance.</p>
       </div>
-
-      <button class="btn btn-primary btn-sm transaction-add-btn">
+      <button class="btn btn-primary btn-sm transaction-add-btn" @click="$emit('add')">
         Add transaction
       </button>
     </div>
 
-    <div class="transaction-table-wrap">
+    <div v-if="loading" class="text-center py-4 text-muted">Loading…</div>
+
+    <div v-else-if="!transactions.length" class="text-center py-4 text-muted">
+      No transactions yet. Add one to get started.
+    </div>
+
+    <div v-else class="transaction-table-wrap">
       <div class="table-responsive">
         <table class="table align-middle mb-0 transaction-table">
           <thead>
@@ -24,7 +29,6 @@
               <th>Status</th>
             </tr>
           </thead>
-
           <tbody>
             <tr v-for="txn in transactions" :key="txn.id">
               <td>
@@ -33,23 +37,14 @@
                   <span class="transaction-item-name">{{ txn.description }}</span>
                 </div>
               </td>
-
-              <td>
-                <span class="transaction-category">{{ txn.category }}</span>
+              <td><span class="transaction-category">{{ txn.category }}</span></td>
+              <td class="transaction-date">{{ formatDate(txn.date) }}</td>
+              <td class="text-end transaction-amount" :class="txn.type === 'expense' ? 'amount-negative' : 'amount-positive'">
+                {{ txn.type === 'expense' ? '-' : '+' }}${{ txn.amount.toFixed(2) }}
               </td>
-
-              <td class="transaction-date">{{ txn.date }}</td>
-
-              <td
-                class="text-end transaction-amount"
-                :class="txn.type === 'expense' ? 'amount-negative' : 'amount-positive'"
-              >
-                {{ txn.amount }}
-              </td>
-
               <td>
-                <span :class="['status-pill', txn.statusClass]">
-                  {{ txn.status }}
+                <span :class="['status-pill', txn.status === 'paid' ? 'status-paid' : 'status-pending']">
+                  {{ txn.status.charAt(0).toUpperCase() + txn.status.slice(1) }}
                 </span>
               </td>
             </tr>
@@ -61,10 +56,31 @@
 </template>
 
 <script setup>
-const transactions = [
-  { id: 1, description: 'Freelance invoice', category: 'Income', date: 'Mar 28', amount: '+$1,280', status: 'Paid', statusClass: 'status-paid', type: 'income' },
-  { id: 2, description: 'Groceries', category: 'Food', date: 'Mar 27', amount: '-$92', status: 'Paid', statusClass: 'status-paid', type: 'expense' },
-  { id: 3, description: 'Electric bill', category: 'Utilities', date: 'Mar 25', amount: '-$68', status: 'Pending', statusClass: 'status-pending', type: 'expense' },
-  { id: 4, description: 'Gym membership', category: 'Health', date: 'Mar 22', amount: '-$45', status: 'Paid', statusClass: 'status-paid', type: 'expense' },
-]
+import { ref, onMounted } from 'vue'
+import api from '../services/api'
+
+defineEmits(['add'])
+
+const transactions = ref([])
+const loading = ref(true)
+
+function formatDate(iso) {
+  const d = new Date(iso)
+  return d.toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+async function refresh() {
+  loading.value = true
+  try {
+    const res = await api.get('/transactions', { params: { limit: 50 } })
+    transactions.value = res.data.data.transactions
+  } catch (err) {
+    console.error('Failed to load transactions:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(refresh)
+defineExpose({ refresh })
 </script>

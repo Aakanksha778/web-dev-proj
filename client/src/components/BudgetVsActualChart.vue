@@ -1,50 +1,73 @@
-﻿<template>
+<template>
   <div class="chart-box p-4">
     <div class="d-flex justify-content-between align-items-start mb-3">
       <div>
         <p class="text-muted mb-1">Budget health</p>
         <h3 class="h5 mb-0">Budget vs actual</h3>
       </div>
-      <span class="badge bg-light text-dark">On track</span>
+      <span class="badge bg-light text-dark">{{ overallStatus }}</span>
     </div>
-    <div class="budget-bars">
-      <div class="budget-row">
-        <span>Food</span>
-        <div class="budget-track"><span style="width: 72%"></span></div>
-        <strong>$420</strong>
-      </div>
-      <div class="budget-row">
-        <span>Transport</span>
-        <div class="budget-track"><span style="width: 58%"></span></div>
-        <strong>$140</strong>
-      </div>
-      <div class="budget-row">
-        <span>Entertainment</span>
-        <div class="budget-track"><span style="width: 49%"></span></div>
-        <strong>$95</strong>
-      </div>
-      <div class="budget-row">
-        <span>Savings</span>
-        <div class="budget-track"><span style="width: 84%"></span></div>
-        <strong>$1,050</strong>
+
+    <div v-if="items.length" class="budget-bars">
+      <div v-for="item in items" :key="item.category" class="budget-row">
+        <span class="budget-label">{{ item.category }}</span>
+        <div class="budget-track">
+          <span :style="{ width: `${Math.min(item.percent, 100)}%`, background: barColor(item.percent) }"></span>
+        </div>
+        <strong class="budget-amount">${{ Math.round(item.actual) }}</strong>
       </div>
     </div>
+
+    <p v-else class="text-muted small mt-2">No budgets set up yet.</p>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  items: { type: Array, default: () => [] },
+})
+
+function barColor(percent) {
+  if (percent >= 90) return '#ef4444'
+  if (percent >= 70) return '#f97316'
+  return 'linear-gradient(90deg, #5c6ac4, #10b981)'
+}
+
+const overallStatus = computed(() => {
+  if (!props.items.length) return '—'
+  const over = props.items.filter((i) => i.percent >= 100).length
+  if (over > 0) return `${over} over budget`
+  const avg = props.items.reduce((s, i) => s + i.percent, 0) / props.items.length
+  return avg < 70 ? 'On track' : 'Watch spending'
+})
+</script>
 
 <style scoped>
 .budget-bars {
   display: grid;
-  gap: 1rem;
+  gap: 0.9rem;
 }
 
 .budget-row {
   display: grid;
-  grid-template-columns: 1.2fr 3fr auto;
+  grid-template-columns: 1.4fr 3fr auto;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
+}
+
+.budget-label {
+  font-size: 0.85rem;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.budget-amount {
+  font-size: 0.85rem;
+  white-space: nowrap;
 }
 
 .budget-track {
@@ -57,6 +80,7 @@
 .budget-track span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, rgba(92, 106, 196, 1), rgba(16, 185, 129, 1));
+  border-radius: 999px;
+  transition: width 0.4s ease;
 }
 </style>
