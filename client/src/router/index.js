@@ -6,10 +6,7 @@ import DashboardPage from '../pages/DashboardPage.vue'
 import TransactionsPage from '../pages/TransactionsPage.vue'
 import BudgetsPage from '../pages/BudgetsPage.vue'
 import GoalsPage from '../pages/GoalsPage.vue'
-import InsightsPage from '../pages/InsightsPage.vue'
 import SettingsPage from '../pages/SettingsPage.vue'
-import RequestHistoryPage from '../pages/RequestHistoryPage.vue'
-import ApprovalDashboardPage from '../pages/ApprovalDashboardPage.vue'
 import WelcomePage from '../pages/WelcomePage.vue'
 import { useAuth } from '../stores/auth'
 
@@ -21,10 +18,7 @@ const routes = [
   { path: '/transactions',name: 'Transactions', component: TransactionsPage,    meta: { requiresAuth: true } },
   { path: '/budgets',     name: 'Budgets',   component: BudgetsPage,            meta: { requiresAuth: true } },
   { path: '/goals',       name: 'Goals',     component: GoalsPage,              meta: { requiresAuth: true } },
-  { path: '/insights',    name: 'Insights',  component: InsightsPage,           meta: { requiresAuth: true } },
   { path: '/settings',    name: 'Settings',  component: SettingsPage,           meta: { requiresAuth: true } },
-  { path: '/requests',    name: 'Requests',  component: RequestHistoryPage,     meta: { requiresAuth: true } },
-  { path: '/approvals',   name: 'Approvals', component: ApprovalDashboardPage,  meta: { requiresAuth: true } },
   { path: '/welcome',     name: 'Welcome',   component: WelcomePage,            meta: { requiresAuth: true } },
 ]
 
