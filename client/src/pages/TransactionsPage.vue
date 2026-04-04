@@ -5,7 +5,6 @@
         <h1>Transactions</h1>
         <p>Browse recent income and expense records. Filter by category, date, and status.</p>
       </div>
-      <button class="btn btn-brand" @click="showModal = true">Add transaction</button>
     </div>
 
     <TransactionTable ref="tableRef" @add="showModal = true" />

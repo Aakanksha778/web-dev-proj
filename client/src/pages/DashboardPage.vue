@@ -30,7 +30,7 @@
       </div>
 
       <div class="row g-4">
-        <div class="col-12 col-md-6 col-xl-3" v-for="card in summaryCards" :key="card.title">
+        <div class="col-12 col-lg-4" v-for="card in summaryCards" :key="card.title">
           <SummaryCard :title="card.title" :value="card.value" :subtitle="card.subtitle" :icon="card.icon" :to="card.to" />
         </div>
       </div>
@@ -156,14 +156,7 @@ const summaryCards = computed(() => [
     subtitle: `${summary.value.savings_goal?.progress ?? 0}% of target reached`,
     icon:     '🥅',
     to:       '/goals',
-  },
-  {
-    title:    'Active budgets',
-    value:    `${summary.value.active_budgets ?? 0} budgets`,
-    subtitle: 'Tracking this month',
-    icon:     '📊',
-    to:       '/budgets',
-  },
+  }
 ])
 
 const highlightHeadline = computed(() => {

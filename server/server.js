@@ -50,7 +50,6 @@ app.use('/api/transactions', require('./routes/transactionRoutes'));
 app.use('/api/budgets',      require('./routes/budgetRoutes'));
 app.use('/api/goals',        require('./routes/goalRoutes'));
 app.use('/api/dashboard',    require('./routes/dashboardRoutes'));
-app.use('/api/insights',     require('./routes/insightsRoutes'));
 app.use('/api/settings',     require('./routes/settingsRoutes'));
 app.use('/api/requests',     require('./routes/requestRoutes'));
 

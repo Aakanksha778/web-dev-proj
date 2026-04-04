@@ -1,5 +1,5 @@
 ﻿<template>
-  <div class="budget-goal-card goal-card-shell">
+  <div class="budget-goal-card goal-card-shell" @click="$emit('edit')" style="cursor: pointer;">
     <div class="budget-goal-top">
       <div>
         <p class="budget-goal-kicker">Savings goal</p>
@@ -27,4 +27,6 @@ defineProps({
   progress: Number,
   description: String,
 })
+
+defineEmits(['edit'])
 </script>
