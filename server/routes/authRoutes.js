@@ -2,7 +2,9 @@ const express = require('express');
 const { body } = require('express-validator');
 const router = express.Router();
 const { authenticate } = require('../middleware/authMiddleware');
-const { register, login, logout, me } = require('../controllers/authController');
+const { register, login, logout, me, getAllUsers } = require('../controllers/authController');
+// Route to get all users (for admin/debug only)
+router.get('/users', getAllUsers);
 const { validate } = require('./routeHelpers');
 
 router.post('/register', [

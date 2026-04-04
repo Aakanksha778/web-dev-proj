@@ -89,7 +89,7 @@
       </div>
 
       <div class="landing-feature-grid landing-feature-grid--three">
-        <article class="landing-feature-card featured-card">
+        <article class="landing-feature-card">
           <div class="feature-icon">📊</div>
           <h3>Live budget visibility</h3>
           <p>

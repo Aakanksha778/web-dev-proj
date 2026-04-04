@@ -86,8 +86,7 @@
                   class="btn btn-outline-secondary"
                   @click="showPassword = !showPassword"
                   :aria-label="showPassword ? 'Hide password' : 'Show password'"
-                >
-                  {{ showPassword ? '🙈' : '👁️' }}
+                >{{ showPassword ? 'Hide' : 'Show' }}
                 </button>
               </div>
             </div>

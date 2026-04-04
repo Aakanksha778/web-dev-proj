@@ -71,4 +71,9 @@ function me(req, res) {
   res.json({ success: true, data: { user: req.user } });
 }
 
-module.exports = { register, login, logout, me };
+function getAllUsers(req, res) {
+  const users = db.prepare('SELECT id, name, email, role FROM users').all();
+  res.json({ success: true, data: { users } });
+}
+
+module.exports = { register, login, logout, me, getAllUsers };
