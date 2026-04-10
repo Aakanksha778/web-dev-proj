@@ -27,6 +27,7 @@
               <th>Date</th>
               <th class="text-end">Amount</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -47,6 +48,11 @@
                   {{ txn.status.charAt(0).toUpperCase() + txn.status.slice(1) }}
                 </span>
               </td>
+              <td>
+                <button type="button" class="btn btn-sm btn-outline-danger transaction-delete-btn" @click="$emit('delete', txn)" title="Delete transaction">
+                  🗑️
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -59,7 +65,7 @@
 import { ref, onMounted } from 'vue'
 import api from '../services/api'
 
-defineEmits(['add'])
+defineEmits(['add', 'delete'])
 
 const transactions = ref([])
 const loading = ref(true)

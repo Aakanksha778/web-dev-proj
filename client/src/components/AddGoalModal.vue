@@ -45,6 +45,15 @@
               ></textarea>
             </div>
 
+            <div class="mb-3">
+              <label for="priorityLevel" class="form-label">Priority</label>
+              <select v-model="form.priority" id="priorityLevel" class="form-select">
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+
             <div v-if="error" class="alert alert-danger" role="alert">
               {{ error }}
             </div>
@@ -77,6 +86,7 @@ const form = ref({
   title: '',
   target: '',
   description: '',
+  priority: 'Medium',
 })
 
 const loading = ref(false)
@@ -93,7 +103,10 @@ async function submitForm() {
       description: form.value.description,
     })
 
-    emit('goal-created', response.data.data.goal)
+    emit('goal-created', {
+      goal: response.data.data.goal,
+      priority: form.value.priority,
+    })
     resetForm()
     emit('update:modelValue', false)
   } catch (err) {
@@ -108,6 +121,7 @@ function resetForm() {
     title: '',
     target: '',
     description: '',
+    priority: 'Medium',
   }
 }
 </script>

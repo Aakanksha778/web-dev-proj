@@ -28,6 +28,15 @@
             </div>
 
             <div class="mb-3">
+              <label for="priorityLevel" class="form-label">Priority</label>
+              <select v-model="form.priority" id="priorityLevel" class="form-select">
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
               <div class="progress" style="height: 25px;">
                 <div
                   class="progress-bar"
@@ -72,10 +81,11 @@ const props = defineProps({
   goal: Object,
 })
 
-const emit = defineEmits(['update:modelValue', 'goal-updated'])
+const emit = defineEmits(['update:modelValue', 'goal-updated', 'goal-completed'])
 
 const form = ref({
   saved: 0,
+  priority: 'Medium',
 })
 
 const loading = ref(false)
@@ -91,6 +101,7 @@ watch(
   (newGoal) => {
     if (newGoal) {
       form.value.saved = newGoal.saved || 0
+      form.value.priority = newGoal.priority || 'Medium'
     }
   },
   { immediate: true }
@@ -107,7 +118,14 @@ async function submitForm() {
       saved: form.value.saved,
     })
 
-    emit('goal-updated', response.data.data.goal)
+    const updatedGoal = response.data.data.goal
+    emit('goal-updated', {
+      goal: updatedGoal,
+      priority: form.value.priority,
+    })
+    if (updatedGoal.saved >= updatedGoal.target) {
+      emit('goal-completed', updatedGoal)
+    }
     emit('update:modelValue', false)
   } catch (err) {
     error.value = err.response?.data?.error || 'Failed to update goal'
