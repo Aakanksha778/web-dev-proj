@@ -129,7 +129,7 @@
 
                 <button
                   type="button"
-                  class="btn btn-ghost settings-password-btn"
+                  class="btn btn-primary settings-password-btn"
                   @click="openPasswordModal"
                 >
                   Change password
