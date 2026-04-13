@@ -5,7 +5,6 @@
         <h1>Goals</h1>
         <p>Track your milestones and stay motivated with measurable progress updates.</p>
       </div>
-      <button class="btn btn-brand" @click="showAddGoalModal = true">New goal</button>
     </div>
 
     <div class="goal-card">
@@ -34,8 +33,12 @@
           class="goal-priority-section"
         >
           <div class="goal-section-header">
-            <h3>{{ group.priority }} Priority</h3>
-            <span>{{ group.goals.length }} {{ group.goals.length === 1 ? 'goal' : 'goals' }}</span>
+            <div class="goal-section-title-row">
+              <span class="goal-section-priority-badge" :class="'priority-' + String(group.priority).toLowerCase()">
+                {{ group.priority }}
+              </span>
+              <h3>{{ group.goals.length }} {{ group.goals.length === 1 ? 'goal' : 'goals' }}</h3>
+            </div>
           </div>
 
           <div class="goal-grid">
@@ -79,14 +82,7 @@
                   <p class="goal-description-cell">{{ goal.description || 'No description added yet.' }}</p>
 
                   <div class="goal-progress-cell">
-                    <div class="goal-progress-track">
-                      <span class="goal-progress-fill" :style="{ width: goal.progress + '%' }"></span>
-                    </div>
-                    <div class="goal-progress-labels">
-                      <span>{{ formatCurrency(goal.saved || 0) }}</span>
-                      <span>{{ goal.progress }}%</span>
-                      <span>{{ formatCurrency(goal.target) }}</span>
-                    </div>
+                    <div class="goal-progress-percentage">{{ goal.progress }}%</div>
                   </div>
 
                   <div class="goal-card-footer">
@@ -124,22 +120,6 @@
                       <span class="goal-budget-label">Progress</span>
                       <strong>{{ goal.progress }}%</strong>
                     </div>
-                  </div>
-
-                  <div class="goal-progress-cell">
-                    <div class="goal-progress-track">
-                      <span class="goal-progress-fill" :style="{ width: goal.progress + '%' }"></span>
-                    </div>
-                    <div class="goal-progress-labels">
-                      <span>{{ formatCurrency(goal.saved || 0) }}</span>
-                      <span>{{ goal.progress }}%</span>
-                      <span>{{ formatCurrency(goal.target) }}</span>
-                    </div>
-                  </div>
-
-                  <div class="goal-card-footer">
-                    <span>{{ formatCurrency(goal.saved || 0) }} saved</span>
-                    <span>{{ formatCurrency(getRemaining(goal)) }} left</span>
                   </div>
                 </article>
               </div>
@@ -329,20 +309,55 @@ function onGoalCompleted() {
 .goal-section-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.goal-section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.goal-section-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .goal-section-header h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: #0f172a;
 }
 
-.goal-section-header span {
-  font-size: 0.9rem;
-  color: #64748b;
+.priority-high {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.priority-medium {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.priority-low {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.goal-section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .goal-grid {
@@ -460,26 +475,21 @@ function onGoalCompleted() {
 .goal-progress-cell {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.6rem;
 }
 
-.goal-progress-track {
-  width: 100%;
-  height: 12px;
-  border-radius: 999px;
-  background: #e2e8f0;
-  overflow: hidden;
+.goal-progress-percentage {
+  text-align: center;
+  font-weight: 700;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: #13b38e;
 }
 
-.goal-progress-fill {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #13b38e, #36c9a7);
-  transition: width 0.35s ease;
+.goal-progress-percentage-back {
+  font-size: 2.2rem;
 }
 
-.goal-progress-labels,
 .goal-card-footer {
   display: flex;
   align-items: center;
@@ -498,6 +508,15 @@ function onGoalCompleted() {
 .goal-flip-hint,
 .goal-budget-label {
   font-size: 0.88rem;
+  color: #64748b;
+}
+
+.goal-progress-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.9rem;
   color: #64748b;
 }
 
