@@ -1,127 +1,121 @@
 ﻿<template>
   <section class="budget-page">
-    <div class="page-header">
-      <div>
-        <h1>Budgets</h1>
-        <p>Build a monthly plan from your yearly income, track your real spending, and review how closely you stay on budget.</p>
-      </div>
-      <button class="btn btn-brand" @click="resetActualSpending">Reset current spending</button>
+    <div v-if="isLoading" class="loading-state">
+      <p>Loading budgets...</p>
     </div>
 
-    <div class="budget-layout">
-      <div class="budget-panel budget-builder">
-        <div class="panel-header">
-          <div>
-            <p class="panel-kicker">Planner</p>
-            <h2>Build your monthly budget</h2>
-          </div>
+    <div v-if="error" class="error-state">
+      <p>{{ error }}</p>
+      <button class="btn btn-outline-secondary" @click="loadBudgets">Retry</button>
+    </div>
+
+    <template v-if="!isLoading">
+      <div class="page-header">
+        <div>
+          <h1>Budgets</h1>
+          <p>Create budgets for different categories, track your real spending, and review how closely you stay on budget.</p>
         </div>
+        <button class="btn btn-brand" @click="resetActualSpending" :disabled="isSaving">Reset current spending</button>
+      </div>
 
-        <div class="income-row">
-          <label class="field-label" for="yearlyIncome">Yearly income</label>
-          <div class="income-input-wrap">
-            <span class="money-prefix">$</span>
-            <input
-              id="yearlyIncome"
-              v-model.number="yearlyIncome"
-              type="number"
-              min="0"
-              step="1000"
-              class="form-control"
-              placeholder="Enter yearly income"
-            />
-          </div>
-        </div>
-
-        <div class="summary-strip">
-          <div class="summary-chip">
-            <span>Monthly income</span>
-            <strong>{{ formatCurrency(monthlyIncome) }}</strong>
-          </div>
-          <div class="summary-chip">
-            <span>Allocated</span>
-            <strong>{{ totalAllocatedPercent.toFixed(0) }}%</strong>
-          </div>
-          <div class="summary-chip" :class="allocationStatusClass">
-            <span>{{ allocationStatusLabel }}</span>
-            <strong>{{ allocationStatusValue }}</strong>
-          </div>
-        </div>
-
-        <div class="category-table">
-          <div class="category-table-head">
-            <span>Category</span>
-            <span>Percent</span>
-            <span>Monthly amount</span>
-            <span></span>
+      <div class="budget-layout">
+        <div class="budget-panel budget-builder">
+          <div class="panel-header">
+            <div>
+              <p class="panel-kicker">Budgets</p>
+              <h2>Your budget categories</h2>
+            </div>
           </div>
 
-          <div v-for="category in budgetCategories" :key="category.id" class="category-row">
-            <input
-              v-model="category.name"
-              type="text"
-              class="form-control"
-              placeholder="Category name"
-            />
-            <div class="percent-input-wrap">
+          <div v-if="budgetCategories.length === 0" class="empty-state">
+            <p>No budgets yet. Create one to get started!</p>
+          </div>
+
+          <div class="category-table">
+            <div class="category-table-head">
+              <span>Category</span>
+              <span>Name/Title</span>
+              <span>Budget Limit</span>
+              <span>Actions</span>
+            </div>
+
+            <div v-for="budget in budgetCategories" :key="budget.id" class="category-row">
               <input
-                v-model.number="category.percent"
-                type="number"
+                v-model="budget.category"
+                type="text"
                 class="form-control"
-                min="0"
-                step="1"
+                placeholder="Category"
+                @blur="updateBudget(budget)"
               />
-              <span class="percent-suffix">%</span>
+              <input
+                v-model="budget.title"
+                type="text"
+                class="form-control"
+                placeholder="Budget name"
+                @blur="updateBudget(budget)"
+              />
+              <div class="budget-amount-input">
+                <span class="money-prefix">$</span>
+                <input
+                  v-model.number="budget.limit_amount"
+                  type="number"
+                  min="0"
+                  step="1"
+                  class="form-control"
+                  @blur="updateBudget(budget)"
+                />
+              </div>
+              <button
+                class="btn btn-outline-danger btn-sm"
+                @click="removeCategory(budget.id)"
+                :disabled="isSaving"
+              >
+                Remove
+              </button>
             </div>
-            <div class="category-amount">{{ formatCurrency(getMonthlyAmount(category.percent)) }}</div>
-            <button
-              class="btn btn-outline-danger btn-sm"
-              @click="removeCategory(category.id)"
-              :disabled="budgetCategories.length <= 1"
-            >
-              Remove
-            </button>
+          </div>
+
+          <div class="builder-actions">
+            <button class="btn btn-outline-secondary" @click="addCategory" :disabled="isSaving">Add budget</button>
           </div>
         </div>
 
-        <div class="builder-actions">
-          <button class="btn btn-outline-secondary" @click="addCategory">Add category</button>
-        </div>
-      </div>
-
-      <div class="budget-panel chart-panel">
-        <div class="chart-header">
-          <div>
-            <p class="panel-kicker">Planned budget</p>
-            <h2>Suggested monthly split</h2>
+        <div class="budget-panel chart-panel">
+          <div class="chart-header">
+            <div>
+              <p class="panel-kicker">Planned budget</p>
+              <h2>Your budgets</h2>
+            </div>
+            <span class="chart-total">{{ formatCurrency(totalPlannedMonthlyBudget) }}/month</span>
           </div>
-          <span class="chart-total">{{ formatCurrency(totalPlannedMonthlyBudget) }}/month</span>
-        </div>
 
-        <div class="pie-layout">
-          <div class="pie-wrap">
-            <div class="pie-chart" :style="plannedChartStyle">
-              <div class="pie-chart-center">
-                <span>Planned</span>
-                <strong>{{ totalAllocatedPercent.toFixed(0) }}%</strong>
+          <div class="pie-layout">
+            <div class="pie-wrap">
+              <div class="pie-chart" :style="plannedChartStyle">
+                <div class="pie-chart-center">
+                  <span>Budget</span>
+                  <strong>{{ formatCurrency(totalPlannedMonthlyBudget) }}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="legend-list">
+              <div v-if="plannedLegend.length === 0" class="empty-state">
+                Add budgets to see them displayed here.
+              </div>
+              <div v-for="item in plannedLegend" :key="item.id" class="legend-item">
+                <span class="legend-dot" :style="{ backgroundColor: item.color }"></span>
+                <div class="legend-text">
+                  <strong>{{ item.name }}</strong>
+                  <span>{{ item.percent.toFixed(0) }}% · {{ formatCurrency(item.amount) }}</span>
+                </div>
               </div>
             </div>
           </div>
-
-          <div class="legend-list">
-            <div v-for="item in plannedLegend" :key="item.id" class="legend-item">
-              <span class="legend-dot" :style="{ backgroundColor: item.color }"></span>
-              <div class="legend-text">
-                <strong>{{ item.name }}</strong>
-                <span>{{ item.percent.toFixed(0) }}% · {{ formatCurrency(item.amount) }}</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
-    </div>
 
-    <div class="budget-layout second-row">
+      <div class="budget-layout second-row">
       <div class="budget-panel chart-panel">
         <div class="chart-header">
           <div>
@@ -137,8 +131,8 @@
               <label class="field-label">Category</label>
               <select v-model="expenseForm.categoryId" class="form-control">
                 <option value="">Choose category</option>
-                <option v-for="category in budgetCategories" :key="category.id" :value="category.id">
-                  {{ category.name || 'Untitled category' }}
+                <option v-for="budget in budgetCategories" :key="budget.id" :value="budget.id">
+                  {{ budget.title || budget.category || 'Untitled' }}
                 </option>
               </select>
             </div>
@@ -279,60 +273,51 @@
         </div>
       </div>
     </div>
+    </template>
   </section>
 </template>
 
 <script setup>
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import api from '../services/api'
 
 const defaultColors = ['#13b38e', '#4f46e5', '#f59e0b', '#ec4899', '#06b6d4', '#ef4444', '#8b5cf6', '#84cc16']
 
-const yearlyIncome = ref(72000)
+const yearlyIncome = ref(0)
 const selectedHistoryWindow = ref(3)
 
-const budgetCategories = ref([
-  { id: crypto.randomUUID(), name: 'Food', percent: 15 },
-  { id: crypto.randomUUID(), name: 'Living', percent: 50 },
-  { id: crypto.randomUUID(), name: 'Entertainment', percent: 10 },
-  { id: crypto.randomUUID(), name: 'Miscellaneous', percent: 10 },
-])
-
+const budgetCategories = ref([])
 const expenseForm = reactive({
   categoryId: '',
   amount: null,
 })
 
-const actualSpending = ref({})
-
-const history = ref([
-  { label: 'March 2026', planned: 5100, actual: 4880, note: 'Stayed under budget by keeping entertainment low.' },
-  { label: 'February 2026', planned: 5100, actual: 5210, note: 'Slightly over because of higher living costs.' },
-  { label: 'January 2026', planned: 5000, actual: 4725, note: 'Good month overall with balanced spending.' },
-  { label: 'December 2025', planned: 5000, actual: 5450, note: 'Holiday spending pushed miscellaneous and entertainment up.' },
-  { label: 'November 2025', planned: 4950, actual: 4825, note: 'Housing and food were right on target.' },
-  { label: 'October 2025', planned: 4950, actual: 4680, note: 'Strong month with low discretionary spending.' },
-])
+const isLoading = ref(true)
+const isSaving = ref(false)
+const error = ref(null)
+const history = ref([])
 
 const monthlyIncome = computed(() => Number(yearlyIncome.value || 0) / 12)
 
 const sanitizedCategories = computed(() => {
-  return budgetCategories.value.map((category, index) => ({
-    ...category,
-    name: category.name?.trim() || `Category ${index + 1}`,
-    percent: Number(category.percent) || 0,
+  return budgetCategories.value.map((budget, index) => ({
+    id: budget.id,
+    name: budget.title || budget.category || `Category ${index + 1}`,
+    percent: 0,
     color: defaultColors[index % defaultColors.length],
+    ...budget,
   }))
 })
 
 const totalAllocatedPercent = computed(() => {
-  return sanitizedCategories.value.reduce((sum, category) => sum + category.percent, 0)
+  return 100
 })
 
 const totalPlannedMonthlyBudget = computed(() => {
-  return sanitizedCategories.value.reduce((sum, category) => sum + getMonthlyAmount(category.percent), 0)
+  return sanitizedCategories.value.reduce((sum, category) => sum + Number(category.limit_amount || 0), 0)
 })
 
-const allocationGap = computed(() => 100 - totalAllocatedPercent.value)
+const allocationGap = computed(() => 0)
 
 const allocationStatusLabel = computed(() => {
   if (allocationGap.value > 0) return 'Still available'
@@ -354,21 +339,25 @@ const allocationStatusClass = computed(() => {
 
 const plannedLegend = computed(() => {
   return sanitizedCategories.value
-    .filter((category) => category.percent > 0)
+    .filter((category) => Number(category.limit_amount) > 0)
     .map((category) => ({
       id: category.id,
       name: category.name,
-      percent: category.percent,
-      amount: getMonthlyAmount(category.percent),
+      percent: (Number(category.limit_amount) / totalPlannedMonthlyBudget.value) * 100,
+      amount: Number(category.limit_amount || 0),
       color: category.color,
     }))
+})
+
+const totalActualSpending = computed(() => {
+  return sanitizedCategories.value.reduce((sum, category) => sum + Number(category.used || 0), 0)
 })
 
 const actualLegend = computed(() => {
   const total = totalActualSpending.value
   return sanitizedCategories.value
     .map((category) => {
-      const amount = Number(actualSpending.value[category.id] || 0)
+      const amount = Number(category.used || 0)
       return {
         id: category.id,
         name: category.name,
@@ -378,10 +367,6 @@ const actualLegend = computed(() => {
       }
     })
     .filter((item) => item.amount > 0)
-})
-
-const totalActualSpending = computed(() => {
-  return Object.values(actualSpending.value).reduce((sum, value) => sum + Number(value || 0), 0)
 })
 
 const spendingDifference = computed(() => totalPlannedMonthlyBudget.value - totalActualSpending.value)
@@ -398,8 +383,8 @@ const statusTone = computed(() => {
 
 const analysisRows = computed(() => {
   return sanitizedCategories.value.map((category) => {
-    const planned = getMonthlyAmount(category.percent)
-    const actual = Number(actualSpending.value[category.id] || 0)
+    const planned = Number(category.limit_amount || 0)
+    const actual = Number(category.used || 0)
     const delta = planned - actual
     return {
       id: category.id,
@@ -463,21 +448,8 @@ const plannedChartStyle = computed(() => buildPieBackground(plannedLegend.value,
 const actualChartStyle = computed(() => buildPieBackground(actualLegend.value, totalActualSpending.value, true))
 
 watch(
-  sanitizedCategories,
+  budgetCategories,
   (categories) => {
-    const next = { ...actualSpending.value }
-
-    categories.forEach((category) => {
-      if (!(category.id in next)) next[category.id] = 0
-    })
-
-    Object.keys(next).forEach((key) => {
-      const exists = categories.some((category) => category.id === key)
-      if (!exists) delete next[key]
-    })
-
-    actualSpending.value = next
-
     if (!expenseForm.categoryId && categories.length) {
       expenseForm.categoryId = categories[0].id
     }
@@ -497,37 +469,148 @@ function getMonthlyAmount(percent) {
   return monthlyIncome.value * ((Number(percent) || 0) / 100)
 }
 
-function addCategory() {
-  budgetCategories.value.push({
-    id: crypto.randomUUID(),
-    name: `New category`,
-    percent: 0,
-  })
+async function updateBudget(budget) {
+  try {
+    isSaving.value = true
+    await api.put(`/budgets/${budget.id}`, {
+      title: budget.title,
+      category: budget.category,
+      limit_amount: budget.limit_amount,
+      period: budget.period,
+    })
+  } catch (err) {
+    error.value = 'Failed to update budget'
+    console.error('Error updating budget:', err)
+  } finally {
+    isSaving.value = false
+  }
 }
 
-function removeCategory(categoryId) {
-  if (budgetCategories.value.length <= 1) return
-  budgetCategories.value = budgetCategories.value.filter((category) => category.id !== categoryId)
+async function loadBudgets() {
+  try {
+    isLoading.value = true
+    error.value = null
+    const response = await api.get('/budgets')
+    budgetCategories.value = response.data.data.budgets || []
+  } catch (err) {
+    error.value = err.response?.data?.error || 'Failed to load budgets'
+    console.error('Error loading budgets:', err)
+  } finally {
+    isLoading.value = false
+  }
 }
 
-function addExpense() {
+async function addCategory() {
+  try {
+    isSaving.value = true
+    const response = await api.post('/budgets', {
+      title: 'New Budget',
+      category: 'Other',
+      limit_amount: 100,
+      period: 'monthly',
+    })
+    budgetCategories.value.push(response.data.data.budget)
+  } catch (err) {
+    error.value = 'Failed to create budget'
+    console.error('Error creating budget:', err)
+  } finally {
+    isSaving.value = false
+  }
+}
+
+async function removeCategory(categoryId) {
+  try {
+    isSaving.value = true
+    await api.delete(`/budgets/${categoryId}`)
+    budgetCategories.value = budgetCategories.value.filter((cat) => cat.id !== categoryId)
+  } catch (err) {
+    error.value = 'Failed to delete budget'
+    console.error('Error deleting budget:', err)
+  } finally {
+    isSaving.value = false
+  }
+}
+
+async function addExpense() {
   if (!expenseForm.categoryId || !expenseForm.amount || expenseForm.amount <= 0) return
 
-  actualSpending.value = {
-    ...actualSpending.value,
-    [expenseForm.categoryId]: Number(actualSpending.value[expenseForm.categoryId] || 0) + Number(expenseForm.amount),
+  try {
+    isSaving.value = true
+    const budget = sanitizedCategories.value.find((cat) => cat.id == expenseForm.categoryId)
+    const categoryName = budget?.category || 'Other'
+    const budgetName = budget?.title || 'Budget'
+
+    // Format date as YYYY-MM-DD
+    const today = new Date()
+    const dateString = today.toISOString().split('T')[0]
+
+    await api.post('/transactions', {
+      description: `Expense for ${budgetName}`,
+      category: categoryName,
+      amount: Number(expenseForm.amount),
+      type: 'expense',
+      status: 'paid',
+      date: dateString,
+    })
+
+    expenseForm.amount = null
+    expenseForm.categoryId = ''
+    
+    // Reload budgets to get updated spending amounts
+    await loadBudgets()
+  } catch (err) {
+    error.value = 'Failed to add expense: ' + (err.response?.data?.error || err.message)
+    console.error('Error adding expense:', err)
+  } finally {
+    isSaving.value = false
   }
-
-  expenseForm.amount = null
 }
 
-function resetActualSpending() {
-  const next = {}
-  sanitizedCategories.value.forEach((category) => {
-    next[category.id] = 0
-  })
-  actualSpending.value = next
+async function resetActualSpending() {
+  try {
+    isSaving.value = true
+    const currentMonth = new Date()
+    const monthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
+    const monthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0)
+
+    // Format as YYYY-MM-DD for consistency
+    const formatDateYYYYMMDD = (date) => {
+      const year = date.getFullYear()
+      const month = String(date.getMonth() + 1).padStart(2, '0')
+      const day = String(date.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    }
+
+    const response = await api.get('/transactions', {
+      params: {
+        from: formatDateYYYYMMDD(monthStart),
+        to: formatDateYYYYMMDD(monthEnd),
+      },
+    })
+
+    const transactions = response.data.data.transactions || []
+    for (const transaction of transactions) {
+      if (transaction.type === 'expense') {
+        try {
+          await api.delete(`/transactions/${transaction.id}`)
+        } catch (deleteErr) {
+          console.error('Error deleting transaction:', deleteErr)
+        }
+      }
+    }
+
+    await loadBudgets()
+  } catch (err) {
+    error.value = 'Failed to reset spending: ' + (err.response?.data?.error || err.message)
+    console.error('Error resetting spending:', err)
+  } finally {
+    isSaving.value = false
+  }
 }
+
+onMounted(() => {
+  loadBudgets()
+})
 
 function buildPieBackground(items, totalValue, useAmounts) {
   if (!items.length || totalValue <= 0) {
@@ -561,6 +644,32 @@ function buildPieBackground(items, totalValue, useAmounts) {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+.loading-state,
+.error-state {
+  padding: 2rem;
+  text-align: center;
+  background: #f8fafc;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+}
+
+.error-state {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.error-state button {
+  margin-top: 1rem;
+}
+
+.empty-state {
+  padding: 1.5rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.9rem;
 }
 
 .budget-layout {
@@ -705,7 +814,7 @@ h2 {
 .category-table-head,
 .category-row {
   display: grid;
-  grid-template-columns: 1.4fr 0.85fr 1fr auto;
+  grid-template-columns: 1fr 1.2fr 1fr 1fr;
   gap: 0.75rem;
   align-items: center;
 }
@@ -727,6 +836,14 @@ h2 {
 .category-amount {
   color: #0f172a;
   font-weight: 700;
+}
+
+.budget-amount-input {
+  position: relative;
+}
+
+.budget-amount-input .form-control {
+  padding-left: 1.75rem;
 }
 
 .builder-actions {
