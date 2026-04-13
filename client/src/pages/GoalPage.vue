@@ -5,7 +5,6 @@
         <h1>Goals</h1>
         <p>Track your milestones and stay motivated with measurable progress updates.</p>
       </div>
-      <button class="btn btn-brand" @click="showAddGoalModal = true">New goal</button>
     </div>
 
     <div class="goal-card">
@@ -13,7 +12,7 @@
         <div>
           <p class="panel-kicker">Progress</p>
           <h2 class="goal-title">Your Goals</h2>
-          <p class="goal-subtitle">Track savings goals and stay motivated.</p>
+          <p class="goal-subtitle">High priority goals stay at the top, then medium, then low.</p>
         </div>
         <button class="btn btn-primary btn-sm goal-add-btn" @click="showAddGoalModal = true">
           Add goal
@@ -26,53 +25,106 @@
         No goals yet. Create one to get started.
       </div>
 
-      <div v-else class="goal-table-wrap">
-        <div class="table-responsive">
-          <table class="table align-middle mb-0 goal-table">
-            <thead>
-              <tr>
-                <th>Goal</th>
-                <th>Target</th>
-                <th>Progress</th>
-                <th>Priority</th>
-                <th>Description</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="goal in sortedGoals" :key="goal.id">
-                <td>
-                  <div class="goal-item-cell">
-                    <span class="goal-item-name">{{ goal.title }}</span>
-                    <span v-if="goal.saved >= goal.target" class="goal-complete-badge">Complete!</span>
-                  </div>
-                </td>
-                <td class="goal-target">${{ goal.target }}</td>
-                <td>
-                  <div class="goal-progress-cell">
-                    <div class="goal-progress-track">
-                      <span class="goal-progress-fill" :style="{ width: goal.progress + '%' }"></span>
+      <div v-else class="goal-sections">
+        <div
+          v-for="group in priorityGroups"
+          :key="group.priority"
+          v-show="group.goals.length"
+          class="goal-priority-section"
+        >
+          <div class="goal-section-header">
+            <div class="goal-section-title-row">
+              <span class="goal-section-priority-badge" :class="'priority-' + String(group.priority).toLowerCase()">
+                {{ group.priority }}
+              </span>
+              <h3>{{ group.goals.length }} {{ group.goals.length === 1 ? 'goal' : 'goals' }}</h3>
+            </div>
+          </div>
+
+          <div class="goal-grid">
+            <div
+              v-for="goal in group.goals"
+              :key="goal.id"
+              class="goal-flip-card"
+              :class="{ 'is-flipped': flippedGoalIds.includes(goal.id) }"
+              @click="toggleCard(goal.id)"
+            >
+              <div class="goal-flip-card-inner">
+                <article class="goal-flip-face goal-flip-front">
+                  <div class="goal-item-top">
+                    <div>
+                      <div class="goal-item-cell">
+                        <span class="goal-item-name">{{ goal.title }}</span>
+                        <span v-if="goal.saved >= goal.target" class="goal-complete-badge">Complete!</span>
+                      </div>
+                      <span class="priority-pill" :class="priorityClass(goal.priority)">{{ goal.priority }}</span>
                     </div>
-                    <span class="goal-progress-text">{{ goal.progress }}%</span>
+
+                    <div class="goal-actions" @click.stop>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary goal-edit-btn"
+                        @click="editGoal(goal)"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger goal-delete-btn"
+                        @click="deleteGoal(goal)"
+                        title="Delete goal"
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
-                </td>
-                <td>
-                  <span class="priority-pill">{{ goal.priority }}</span>
-                </td>
-                <td class="goal-description-cell">{{ goal.description }}</td>
-                <td>
-                  <div class="goal-actions">
-                    <button type="button" class="btn btn-sm btn-outline-secondary goal-edit-btn" @click="editGoal(goal)">
-                      Edit
-                    </button>
-                    <button type="button" class="btn btn-sm btn-outline-danger goal-delete-btn" @click="deleteGoal(goal)" title="Delete goal">
-                      🗑️
-                    </button>
+
+                  <p class="goal-description-cell">{{ goal.description || 'No description added yet.' }}</p>
+
+                  <div class="goal-progress-cell">
+                    <div class="goal-progress-percentage">{{ goal.progress }}%</div>
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+                  <div class="goal-card-footer">
+                    <span class="goal-target">Target: {{ formatCurrency(goal.target) }}</span>
+                    <span class="goal-flip-hint">Click to view budget details</span>
+                  </div>
+                </article>
+
+                <article class="goal-flip-face goal-flip-back">
+                  <div class="goal-back-header">
+                    <div>
+                      <div class="goal-item-cell">
+                        <span class="goal-item-name">{{ goal.title }}</span>
+                        <span v-if="goal.saved >= goal.target" class="goal-complete-badge">Complete!</span>
+                      </div>
+                      <span class="priority-pill" :class="priorityClass(goal.priority)">{{ goal.priority }}</span>
+                    </div>
+                    <span class="goal-flip-hint">Click to flip back</span>
+                  </div>
+
+                  <div class="goal-budget-stats">
+                    <div class="goal-budget-stat">
+                      <span class="goal-budget-label">Budget target</span>
+                      <strong>{{ formatCurrency(goal.target) }}</strong>
+                    </div>
+                    <div class="goal-budget-stat">
+                      <span class="goal-budget-label">Saved so far</span>
+                      <strong>{{ formatCurrency(goal.saved || 0) }}</strong>
+                    </div>
+                    <div class="goal-budget-stat">
+                      <span class="goal-budget-label">Remaining</span>
+                      <strong>{{ formatCurrency(getRemaining(goal)) }}</strong>
+                    </div>
+                    <div class="goal-budget-stat">
+                      <span class="goal-budget-label">Progress</span>
+                      <strong>{{ goal.progress }}%</strong>
+                    </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -96,6 +148,7 @@ import ConfettiBurst from '../components/ConfettiBurst.vue'
 import api from '../services/api'
 
 const PRIORITY_ORDER = { High: 1, Medium: 2, Low: 3 }
+const PRIORITY_LIST = ['High', 'Medium', 'Low']
 const LOCAL_STORAGE_KEY = 'goalPriorities'
 const defaultPriority = 'Medium'
 
@@ -105,16 +158,26 @@ const showAddGoalModal = ref(false)
 const showEditGoalModal = ref(false)
 const showConfetti = ref(false)
 const selectedGoal = ref(null)
+const flippedGoalIds = ref([])
 
 const goalPriorities = ref(loadGoalPriorities())
 
 const sortedGoals = computed(() => {
   return [...goals.value].sort((a, b) => {
-    const orderA = PRIORITY_ORDER[a.priority || defaultPriority]
-    const orderB = PRIORITY_ORDER[b.priority || defaultPriority]
+    const orderA = PRIORITY_ORDER[a.priority || defaultPriority] ?? PRIORITY_ORDER[defaultPriority]
+    const orderB = PRIORITY_ORDER[b.priority || defaultPriority] ?? PRIORITY_ORDER[defaultPriority]
+
     if (orderA !== orderB) return orderA - orderB
-    return new Date(b.created_at) - new Date(a.created_at)
+
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0)
   })
+})
+
+const priorityGroups = computed(() => {
+  return PRIORITY_LIST.map((priority) => ({
+    priority,
+    goals: sortedGoals.value.filter((goal) => (goal.priority || defaultPriority) === priority),
+  }))
 })
 
 function loadGoalPriorities() {
@@ -145,6 +208,31 @@ function removeGoalPriority(goalId) {
 
 function triggerConfetti() {
   showConfetti.value = true
+}
+
+function toggleCard(goalId) {
+  if (flippedGoalIds.value.includes(goalId)) {
+    flippedGoalIds.value = flippedGoalIds.value.filter((id) => id !== goalId)
+    return
+  }
+
+  flippedGoalIds.value.push(goalId)
+}
+
+function priorityClass(priority) {
+  return `priority-${String(priority || defaultPriority).toLowerCase()}`
+}
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0)
+}
+
+function getRemaining(goal) {
+  return Math.max((Number(goal.target) || 0) - (Number(goal.saved) || 0), 0)
 }
 
 onMounted(async () => {
@@ -189,6 +277,7 @@ async function deleteGoal(goal) {
   try {
     await api.delete(`/goals/${goal.id}`)
     goals.value = goals.value.filter((g) => g.id !== goal.id)
+    flippedGoalIds.value = flippedGoalIds.value.filter((id) => id !== goal.id)
     removeGoalPriority(goal.id)
     if (selectedGoal.value?.id === goal.id) {
       selectedGoal.value = null
@@ -203,3 +292,268 @@ function onGoalCompleted() {
   triggerConfetti()
 }
 </script>
+
+<style scoped>
+.goal-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.goal-priority-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.goal-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.goal-section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.goal-section-priority-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.goal-section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.priority-high {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.priority-medium {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.priority-low {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.goal-section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.goal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.goal-flip-card {
+  perspective: 1200px;
+  min-height: 320px;
+  cursor: pointer;
+}
+
+.goal-flip-card-inner {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  transition: transform 0.7s;
+  transform-style: preserve-3d;
+}
+
+.goal-flip-card.is-flipped .goal-flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.goal-flip-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem;
+  border-radius: 1rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.goal-flip-front {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.goal-flip-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(180deg, #f8fffb 0%, #eefaf4 100%);
+}
+
+.goal-item-top,
+.goal-back-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.goal-item-cell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.goal-item-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.goal-complete-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(19, 179, 142, 0.12);
+  color: #0f8b6e;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.priority-pill {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.55rem;
+  padding: 0.28rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.priority-high {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.priority-medium {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.priority-low {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.goal-description-cell {
+  margin: 0;
+  min-height: 44px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.goal-progress-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.goal-progress-percentage {
+  text-align: center;
+  font-weight: 700;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: #13b38e;
+}
+
+.goal-progress-percentage-back {
+  font-size: 2.2rem;
+}
+
+.goal-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.goal-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.goal-flip-hint,
+.goal-budget-label {
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.goal-progress-labels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.goal-budget-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.goal-budget-stat {
+  padding: 0.9rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.goal-budget-stat strong {
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+@media (max-width: 768px) {
+  .goal-grid,
+  .goal-budget-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-item-top,
+  .goal-back-header,
+  .goal-card-footer,
+  .goal-progress-labels,
+  .goal-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>

@@ -28,6 +28,7 @@
           <template v-if="user">
             <li class="nav-item"><router-link class="nav-link centsora-nav-link" to="/dashboard">Dashboard</router-link></li>
             <li class="nav-item"><router-link class="nav-link centsora-nav-link" to="/transactions">Transactions</router-link></li>
+            <li class="nav-item"><router-link class="nav-link centsora-nav-link" to="/budgets">Budgets</router-link></li>
             <li class="nav-item"><router-link class="nav-link centsora-nav-link" to="/goals">Goals</router-link></li>
             <li class="nav-item"><router-link class="nav-link centsora-nav-link" to="/settings">Settings</router-link></li>
             <li class="nav-item ms-lg-3 mt-3 mt-lg-0">

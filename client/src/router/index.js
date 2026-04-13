@@ -5,6 +5,7 @@ import RegisterPage from '../pages/RegisterPage.vue'
 import DashboardPage from '../pages/DashboardPage.vue'
 import TransactionsPage from '../pages/TransactionsPage.vue'
 import PlanningPage from '../pages/GoalPage.vue'
+import BudgetsPage from '../pages/BudgetsPage.vue'
 import SettingsPage from '../pages/SettingsPage.vue'
 import WelcomePage from '../pages/WelcomePage.vue'
 import { useAuth } from '../stores/auth'
@@ -16,6 +17,7 @@ const routes = [
   { path: '/dashboard',   name: 'Dashboard', component: DashboardPage,          meta: { requiresAuth: true } },
   { path: '/transactions',name: 'Transactions', component: TransactionsPage,    meta: { requiresAuth: true } },
   { path: '/goals',       name: 'Goals',     component: PlanningPage,            meta: { requiresAuth: true } },
+  { path: '/budgets',     name: 'Budgets',   component: BudgetsPage,            meta: { requiresAuth: true } },
   { path: '/settings',    name: 'Settings',  component: SettingsPage,           meta: { requiresAuth: true } },
   { path: '/welcome',     name: 'Welcome',   component: WelcomePage,            meta: { requiresAuth: true } },
 ]
