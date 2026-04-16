@@ -556,4 +556,61 @@ function onGoalCompleted() {
     align-items: flex-start;
   }
 }
+
+/* ── Dark mode ────────────────────────────────────────────────── */
+[data-theme="dark"] .goal-section-header h3 {
+  color: var(--text);
+}
+
+[data-theme="dark"] .goal-flip-face {
+  border-color: var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .goal-flip-front {
+  background: linear-gradient(180deg, var(--panel-strong) 0%, var(--bg-elevated) 100%);
+}
+
+[data-theme="dark"] .goal-flip-back {
+  background: linear-gradient(180deg, rgba(30, 51, 35, 0.98) 0%, rgba(24, 42, 28, 0.97) 100%);
+}
+
+[data-theme="dark"] .goal-item-name {
+  color: var(--text);
+}
+
+[data-theme="dark"] .goal-description-cell {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .goal-card-footer,
+[data-theme="dark"] .goal-flip-hint,
+[data-theme="dark"] .goal-budget-label,
+[data-theme="dark"] .goal-progress-labels {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .goal-budget-stat {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .goal-budget-stat strong {
+  color: var(--text);
+}
+
+[data-theme="dark"] .priority-high {
+  background: rgba(185, 28, 28, 0.18);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .priority-medium {
+  background: rgba(180, 83, 9, 0.18);
+  color: #fcd34d;
+}
+
+[data-theme="dark"] .priority-low {
+  background: rgba(21, 128, 61, 0.18);
+  color: #86efac;
+}
 </style>

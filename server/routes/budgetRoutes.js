@@ -2,10 +2,11 @@ const express = require('express');
 const { body, param } = require('express-validator');
 const router = express.Router();
 const { authenticate } = require('../middleware/authMiddleware');
-const { getAll, create, update, remove } = require('../controllers/budgetController');
+const { getAll, create, update, remove, getHistory } = require('../controllers/budgetController');
 const { validate } = require('./routeHelpers');
 
 router.get('/', authenticate, getAll);
+router.get('/history', authenticate, getHistory);
 
 router.post('/', authenticate, [
   body('title').trim().notEmpty().withMessage('Title is required'),

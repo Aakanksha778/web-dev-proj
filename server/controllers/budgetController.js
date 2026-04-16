@@ -99,4 +99,33 @@ function remove(req, res) {
   }
 }
 
-module.exports = { getAll, create, update, remove, BUDGET_WITH_COMPUTED };
+function getHistory(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const { planned } = db.prepare(
+      'SELECT COALESCE(SUM(limit_amount), 0) AS planned FROM budgets WHERE user_id = ?'
+    ).get(userId);
+
+    const rows = db.prepare(`
+      SELECT
+        strftime('%Y-%m', date) AS month,
+        SUM(amount)             AS actual
+      FROM transactions
+      WHERE user_id = ?
+        AND type    = 'expense'
+        AND strftime('%Y-%m', date) < strftime('%Y-%m', 'now')
+      GROUP BY month
+      ORDER BY month DESC
+      LIMIT 6
+    `).all(userId);
+
+    const history = rows.map(row => ({ month: row.month, actual: row.actual, planned }));
+    res.json({ success: true, data: { history } });
+  } catch (error) {
+    console.error('Error fetching budget history:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch budget history' });
+  }
+}
+
+module.exports = { getAll, create, update, remove, getHistory, BUDGET_WITH_COMPUTED };

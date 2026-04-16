@@ -1586,6 +1586,53 @@ h6,
   box-shadow: none;
 }
 
+[data-theme="dark"] .goal-card {
+  background: var(--panel-strong) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .goal-title {
+  color: var(--text);
+}
+
+[data-theme="dark"] .tip-mini-card {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .tip-mini-card span {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .tip-mini-card strong {
+  color: var(--text);
+}
+
+[data-theme="dark"] .dashboard-tip-title {
+  color: var(--text);
+}
+
+[data-theme="dark"] .dashboard-hero {
+  background:
+    radial-gradient(circle at top right, rgba(82, 183, 136, 0.1), transparent 32%),
+    radial-gradient(circle at bottom left, rgba(116, 198, 157, 0.06), transparent 28%),
+    linear-gradient(135deg, var(--panel-strong) 0%, var(--bg-elevated) 100%) !important;
+  border-color: var(--border) !important;
+  box-shadow: var(--shadow-2);
+}
+
+[data-theme="dark"] .dashboard-title {
+  color: var(--text);
+}
+
+[data-theme="dark"] .dashboard-kicker {
+  color: var(--accent);
+}
+
+[data-theme="dark"] .dashboard-subtitle {
+  color: var(--muted);
+}
+
 .tip-mini-card {
   padding: 1rem;
   border-radius: 18px;

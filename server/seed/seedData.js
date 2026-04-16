@@ -13,16 +13,16 @@ function seed() {
     db.prepare('DELETE FROM users').run();
 
     // Users
-    const hash1 = bcrypt.hashSync('password123', 12);
+    const hash1 = bcrypt.hashSync('admin123', 12);
     const hash2 = bcrypt.hashSync('approver456', 12);
 
     const u1 = db.prepare(
       'INSERT INTO users (name, email, password, role, timezone) VALUES (?, ?, ?, ?, ?)'
-    ).run('Aakanksha', 'aakanksha@example.com', hash1, 'user', 'America/New_York');
+    ).run('Vibhavan', 'admin@centsora.com', hash1, 'user', 'America/New_York');
 
     const u2 = db.prepare(
       'INSERT INTO users (name, email, password, role, timezone) VALUES (?, ?, ?, ?, ?)'
-    ).run('Avery Morgan', 'avery@example.com', hash2, 'approver', 'Europe/London');
+    ).run('Avery Morgan', 'avery@centsora.com', hash2, 'approver', 'Europe/London');
 
     const uid  = u1.lastInsertRowid;
     const aid  = u2.lastInsertRowid;
@@ -31,7 +31,7 @@ function seed() {
     db.prepare('INSERT INTO user_preferences (user_id, notifications, auto_budget, dark_mode) VALUES (?, 1, 0, 0)').run(uid);
     db.prepare('INSERT INTO user_preferences (user_id, notifications, auto_budget, dark_mode) VALUES (?, 1, 1, 0)').run(aid);
 
-    // Transactions for Aakanksha (6 months: Oct 2025 – Mar 2026)
+    // Transactions for Vibhavan (6 months: Oct 2025 – Apr 2026)
     const txn = db.prepare(
       'INSERT INTO transactions (user_id, description, category, amount, type, status, date) VALUES (?, ?, ?, ?, ?, ?, ?)'
     );
@@ -162,8 +162,8 @@ function seed() {
 
   run();
   console.log('Seed complete.');
-  console.log('  User:     aakanksha@example.com / password123');
-  console.log('  Approver: avery@example.com / approver456');
+  console.log('  User:     admin@centsora.com / admin123');
+  console.log('  Approver: avery@centsora.com / approver456');
 }
 
 seed();

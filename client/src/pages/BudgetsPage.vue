@@ -421,12 +421,7 @@ const currentMonthReview = computed(() => {
     : 'You are currently over budget overall, so this would be a good time to slow spending in non-essential categories.'
 })
 
-const visibleHistory = computed(() => {
-  return history.value.slice(0, selectedHistoryWindow.value).map((month) => ({
-    ...month,
-    adherence: month.actual > 0 ? Math.min((month.planned / month.actual) * 100, 140) : 100,
-  }))
-})
+const visibleHistory = computed(() => history.value.slice(0, selectedHistoryWindow.value))
 
 const averageAdherence = computed(() => {
   if (visibleHistory.value.length === 0) return 0
@@ -490,8 +485,22 @@ async function loadBudgets() {
   try {
     isLoading.value = true
     error.value = null
-    const response = await api.get('/budgets')
-    budgetCategories.value = response.data.data.budgets || []
+    const budgetsRes = await api.get('/budgets')
+    budgetCategories.value = budgetsRes.data.data.budgets || []
+
+    try {
+      const historyRes = await api.get('/budgets/history')
+      history.value = (historyRes.data.data.history || []).map(row => {
+        const [year, month] = row.month.split('-')
+        const label = new Date(Number(year), Number(month) - 1, 1)
+          .toLocaleString('en-CA', { month: 'long', year: 'numeric' })
+        const adherence = row.actual > 0 ? Math.min((row.planned / row.actual) * 100, 140) : 100
+        const note = adherence >= 100 ? 'Within budget' : `${formatCurrency(row.actual - row.planned)} over budget`
+        return { label, planned: row.planned, actual: row.actual, adherence, note }
+      })
+    } catch {
+      history.value = []
+    }
   } catch (err) {
     error.value = err.response?.data?.error || 'Failed to load budgets'
     console.error('Error loading budgets:', err)
@@ -1059,5 +1068,138 @@ h2 {
   .history-metrics {
     align-items: flex-start;
   }
+}
+
+/* ── Dark mode ────────────────────────────────────────────────── */
+[data-theme="dark"] .budget-panel {
+  background: var(--panel-strong);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2 {
+  color: var(--text);
+}
+
+[data-theme="dark"] .page-header p {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .panel-kicker {
+  color: var(--accent);
+}
+
+[data-theme="dark"] .chart-total {
+  color: var(--text);
+}
+
+[data-theme="dark"] .category-row {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .category-table-head {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .legend-item,
+[data-theme="dark"] .comparison-row,
+[data-theme="dark"] .history-row {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .legend-text strong,
+[data-theme="dark"] .comparison-row strong,
+[data-theme="dark"] .history-row strong {
+  color: var(--text);
+}
+
+[data-theme="dark"] .legend-text span,
+[data-theme="dark"] .comparison-row span,
+[data-theme="dark"] .history-row span {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .summary-chip,
+[data-theme="dark"] .analysis-card {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .summary-chip span,
+[data-theme="dark"] .analysis-card span {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .summary-chip strong,
+[data-theme="dark"] .analysis-card strong {
+  color: var(--text);
+}
+
+[data-theme="dark"] .analysis-card.is-good {
+  background: rgba(82, 183, 136, 0.12);
+  border-color: rgba(82, 183, 136, 0.25);
+}
+
+[data-theme="dark"] .analysis-card.is-danger {
+  background: rgba(224, 112, 96, 0.12);
+  border-color: rgba(224, 112, 96, 0.25);
+}
+
+[data-theme="dark"] .analysis-message {
+  background: linear-gradient(180deg, rgba(30, 51, 35, 0.8) 0%, rgba(24, 42, 28, 0.9) 100%);
+  border-color: rgba(82, 183, 136, 0.2);
+}
+
+[data-theme="dark"] .analysis-message p {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .empty-state {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+[data-theme="dark"] .pie-chart-center {
+  background: var(--panel-strong);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+[data-theme="dark"] .pie-chart-center span {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .pie-chart-center strong {
+  color: var(--text);
+}
+
+[data-theme="dark"] .history-tabs {
+  background: var(--bg);
+}
+
+[data-theme="dark"] .history-tab {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .history-tab.active {
+  background: var(--bg-elevated);
+  color: var(--text);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .field-label {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .money-prefix {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .loading-state {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+  color: var(--muted);
 }
 </style>

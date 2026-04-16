@@ -25,3 +25,5 @@ client/dist-ssr/
 .DS_Store
 *.suo
 *.sw?
+
+package-lock.json
