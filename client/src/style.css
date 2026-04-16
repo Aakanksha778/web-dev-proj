@@ -78,6 +78,41 @@ body[data-theme="dark"] {
   color: var(--text) !important;
 }
 
+[data-theme="dark"] .transaction-title {
+  color: var(--text);
+}
+
+[data-theme="dark"] .transaction-table thead th {
+  background: var(--bg-elevated);
+  border-bottom-color: var(--border);
+  color: var(--muted);
+}
+
+[data-theme="dark"] .transaction-table tbody td {
+  background: var(--panel-strong);
+  border-bottom-color: var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] .transaction-table tbody tr:hover td {
+  background: var(--bg-elevated);
+}
+
+[data-theme="dark"] .transaction-category {
+  background: rgba(82, 183, 136, 0.12);
+  color: var(--accent);
+}
+
+[data-theme="dark"] .status-paid {
+  background: rgba(82, 183, 136, 0.15);
+  color: #86efac;
+}
+
+[data-theme="dark"] .status-pending {
+  background: rgba(252, 211, 77, 0.12);
+  color: #fcd34d;
+}
+
 [data-theme="dark"] .form-control,
 [data-theme="dark"] .form-select {
   background-color: var(--bg-elevated);
