@@ -1,0 +1,45 @@
+CentSora - Group Contributions
+========================================================
+
+Team Members & Work Distribution
+========================================================
+
+
+Backend Integration
+Shiv Amin:
+- Controllers (authController, budgetController, goalController, transactionController)
+- All of the middleware
+- UI bug fixes
+- Routes
+- Documentation 
+
+Vibhavan Saibuvis:
+- Controllers (dashboardController, requestController, settingController)
+- All of database 
+- UI bug fixes
+- Routes
+
+
+Frontend Integration
+Aakanksha Parekh:
+- Settings Page
+- Register Page
+- Login/Signin Page
+- Landing Page
+- Components
+- UI bug fixes
+
+Paul Joesph:
+- Goals Page
+- Transaction Page
+- Dashboard Page
+- Welcome Page
+- Componenets
+- UI bug fixes
+
+Karankumer Patel:
+- Budgets Page
+- Transaction Page
+- Dashboard Page
+- Componenets
+- UI bug fixes
