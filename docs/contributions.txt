@@ -8,15 +8,20 @@ Team Members & Work Distribution
 Backend Integration
 Shiv Amin:
 - Controllers (authController, budgetController, goalController, transactionController)
-- All of the middleware
-- UI bug fixes
+- Middleware
+- UI bug fixes and improvements to workflow
+- Project Structure
+- Componenets
 - Routes
 - Documentation 
+- Readme
 
 Vibhavan Saibuvis:
 - Controllers (dashboardController, requestController, settingController)
+- Middleware
 - All of database 
 - UI bug fixes
+- Componenets
 - Routes
 
 

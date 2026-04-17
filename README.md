@@ -53,8 +53,7 @@ web-dev-proj/
 │       ├── style.css
 │       ├── assets/
 │       │   ├── pictures/
-│       │   └── styles/
-│       │       └── main.css
+|       |         ├── logo.png
 │       ├── components/
 │       │   ├── AddGoalModal.vue
 │       │   ├── AddTransactionModal.vue
