@@ -64,7 +64,7 @@
       </div>
 
       <div class="row g-4 mt-2">
-        <div class="col-12 col-lg-5">
+        <div class="col-12 col-lg-4">
           <div class="card page-card dashboard-panel p-4 h-100">
             <div class="panel-heading">
               <div>
@@ -77,24 +77,20 @@
           </div>
         </div>
 
-        <div class="col-12 col-lg-7">
+        <div class="col-12 col-lg-8">
           <div class="card page-card dashboard-tip-card p-4 h-100">
             <p class="panel-kicker">Quick insight</p>
             <h2 class="dashboard-tip-title">{{ tipHeadline }}</h2>
             <p class="muted">{{ tipBody }}</p>
 
-            <div class="dashboard-tip-grid">
-              <div class="tip-mini-card">
-                <span>Income</span>
-                <strong>${{ fmt(summary.monthly_income) }}</strong>
-              </div>
-              <div class="tip-mini-card">
-                <span>Spent</span>
-                <strong>${{ fmt(summary.monthly_spend) }}</strong>
-              </div>
-              <div class="tip-mini-card">
-                <span>Savings</span>
-                <strong>{{ summary.savings_goal?.progress ?? 0 }}% complete</strong>
+            <div class="dashboard-summary-row">
+              <div v-for="stat in summaryStats" :key="stat.title" class="stat-card">
+                <div class="stat-icon" :class="stat.accent">{{ stat.icon }}</div>
+                <div class="stat-copy">
+                  <span class="stat-label">{{ stat.title }}</span>
+                  <strong>{{ stat.value }}</strong>
+                  <p class="stat-meta">{{ stat.subtitle }}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -156,6 +152,30 @@ const summaryCards = computed(() => [
     subtitle: `${summary.value.savings_goal?.progress ?? 0}% of target reached`,
     icon:     '🥅',
     to:       '/goals',
+  }
+])
+
+const summaryStats = computed(() => [
+  {
+    title:    'Income',
+    value:    `$${fmt(summary.value.monthly_income)}`,
+    subtitle: 'This month',
+    icon:     '💵',
+    accent:   'income',
+  },
+  {
+    title:    'Spent',
+    value:    `$${fmt(summary.value.monthly_spend)}`,
+    subtitle: 'This month',
+    icon:     '📉',
+    accent:   'spent',
+  },
+  {
+    title:    'Savings',
+    value:    `${summary.value.savings_goal?.progress ?? 0}%`,
+    subtitle: 'Goal progress',
+    icon:     '🥅',
+    accent:   'savings',
   }
 ])
 
@@ -222,3 +242,76 @@ function onSaved() {
 
 onMounted(fetchDashboard)
 </script>
+
+<style scoped>
+.dashboard-panel {
+  min-height: 340px;
+}
+.dashboard-tip-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+.dashboard-summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.stat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 20px;
+  background: var(--panel-strong, #ffffff);
+  border: 1px solid rgba(31, 107, 87, 0.08);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+.stat-icon.income {
+  background: rgba(16, 185, 129, 0.14);
+  color: #10b981;
+}
+.stat-icon.spent {
+  background: rgba(239, 68, 68, 0.14);
+  color: #ef4444;
+}
+.stat-icon.savings {
+  background: rgba(59, 130, 246, 0.14);
+  color: #3b82f6;
+}
+.stat-copy {
+  min-width: 0;
+}
+.stat-label {
+  display: block;
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-bottom: 0.35rem;
+}
+.stat-card strong {
+  display: block;
+  font-size: 1.18rem;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+.stat-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+@media (max-width: 900px) {
+  .dashboard-summary-row {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

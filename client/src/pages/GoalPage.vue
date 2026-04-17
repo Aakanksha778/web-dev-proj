@@ -8,17 +8,6 @@
     </div>
 
     <div class="goal-card">
-      <div class="goal-card-header">
-        <div>
-          <p class="panel-kicker">Progress</p>
-          <h2 class="goal-title">Your Goals</h2>
-          <p class="goal-subtitle">High priority goals stay at the top, then medium, then low.</p>
-        </div>
-        <button class="btn btn-primary btn-sm goal-add-btn" @click="showAddGoalModal = true">
-          Add goal
-        </button>
-      </div>
-
       <div v-if="loading" class="text-center py-4 text-muted">Loading goals...</div>
 
       <div v-else-if="goals.length === 0" class="text-center py-4 text-muted">
@@ -47,20 +36,11 @@
               :key="goal.id"
               class="goal-flip-card"
               :class="{ 'is-flipped': flippedGoalIds.includes(goal.id) }"
-              @click="toggleCard(goal.id)"
             >
               <div class="goal-flip-card-inner">
-                <article class="goal-flip-face goal-flip-front">
+                <article class="goal-flip-face goal-flip-front" :class="{ complete: goal.saved >= goal.target }" @click="toggleCard(goal.id)">
                   <div class="goal-item-top">
-                    <div>
-                      <div class="goal-item-cell">
-                        <span class="goal-item-name">{{ goal.title }}</span>
-                        <span v-if="goal.saved >= goal.target" class="goal-complete-badge">Complete!</span>
-                      </div>
-                      <span class="priority-pill" :class="priorityClass(goal.priority)">{{ goal.priority }}</span>
-                    </div>
-
-                    <div class="goal-actions" @click.stop>
+                    <div class="goal-actions goal-actions-start" @click.stop>
                       <button
                         type="button"
                         class="btn btn-sm btn-outline-secondary goal-edit-btn"
@@ -68,6 +48,9 @@
                       >
                         Edit
                       </button>
+                    </div>
+
+                    <div class="goal-actions" @click.stop>
                       <button
                         type="button"
                         class="btn btn-sm btn-outline-danger goal-delete-btn"
@@ -79,26 +62,37 @@
                     </div>
                   </div>
 
-                  <p class="goal-description-cell">{{ goal.description || 'No description added yet.' }}</p>
-
-                  <div class="goal-progress-cell">
-                    <div class="goal-progress-percentage">{{ goal.progress }}%</div>
+                  <div class="goal-progress-summary">
+                    <h2 class="goal-front-title" :class="priorityClass(goal.priority)">{{ goal.title }}</h2>
+                    <template v-if="goal.progress >= 100">
+                      <div class="goal-complete-center">Complete</div>
+                    </template>
+                    <template v-else>
+                      <div class="goal-progress-percentage">{{ goal.progress }}%</div>
+                      <div class="goal-progress-track">
+                        <span class="goal-progress-fill" :style="{ width: `${goal.progress}%` }"></span>
+                      </div>
+                    </template>
                   </div>
+
+                  <p class="goal-description-cell">{{ goal.description || 'No description added yet.' }}</p>
 
                   <div class="goal-card-footer">
                     <span class="goal-target">Target: {{ formatCurrency(goal.target) }}</span>
-                    <span class="goal-flip-hint">Click to view budget details</span>
+                    <div class="goal-card-actions">
+                      <button type="button" class="goal-detail-btn" @click.stop.prevent="toggleCard(goal.id)">
+                        View budget details <span class="goal-detail-icon">→</span>
+                      </button>
+                    </div>
                   </div>
                 </article>
 
-                <article class="goal-flip-face goal-flip-back">
+                <article class="goal-flip-face goal-flip-back" @click="toggleCard(goal.id)">
                   <div class="goal-back-header">
                     <div>
                       <div class="goal-item-cell">
-                        <span class="goal-item-name">{{ goal.title }}</span>
-                        <span v-if="goal.saved >= goal.target" class="goal-complete-badge">Complete!</span>
+                        <span class="goal-item-name" :class="priorityClass(goal.priority)">{{ goal.title }}</span>
                       </div>
-                      <span class="priority-pill" :class="priorityClass(goal.priority)">{{ goal.priority }}</span>
                     </div>
                     <span class="goal-flip-hint">Click to flip back</span>
                   </div>
@@ -120,6 +114,23 @@
                       <span class="goal-budget-label">Progress</span>
                       <strong>{{ goal.progress }}%</strong>
                     </div>
+                  </div>
+                </article>
+              </div>
+            </div>
+
+            <div
+              v-if="group.goals.length % 2 === 1"
+              class="goal-flip-card goal-add-placeholder"
+              @click="showAddGoalModal = true"
+            >
+              <div class="goal-flip-card-inner">
+                <article class="goal-flip-face goal-flip-empty">
+                  <div class="placeholder-content">
+                    <span class="placeholder-icon">＋</span>
+                    <h3>Add another goal</h3>
+                    <p>Create a second milestone and keep your plan balanced.</p>
+                    <button type="button" class="btn btn-ghost">Add goal</button>
                   </div>
                 </article>
               </div>
@@ -298,12 +309,14 @@ function onGoalCompleted() {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  padding: 0.6rem 0.9rem 1.1rem;
 }
 
 .goal-priority-section {
   display: flex;
   flex-direction: column;
   gap: 0.9rem;
+  padding: 0 0.75rem;
 }
 
 .goal-section-header {
@@ -338,17 +351,20 @@ function onGoalCompleted() {
   color: #0f172a;
 }
 
-.priority-high {
+.priority-pill.priority-high,
+.goal-section-priority-badge.priority-high {
   background: #fee2e2;
   color: #b91c1c;
 }
 
-.priority-medium {
+.priority-pill.priority-medium,
+.goal-section-priority-badge.priority-medium {
   background: #fef3c7;
   color: #b45309;
 }
 
-.priority-low {
+.priority-pill.priority-low,
+.goal-section-priority-badge.priority-low {
   background: #dcfce7;
   color: #15803d;
 }
@@ -368,14 +384,14 @@ function onGoalCompleted() {
 
 .goal-flip-card {
   perspective: 1200px;
-  min-height: 320px;
+  min-height: 360px;
   cursor: pointer;
 }
 
 .goal-flip-card-inner {
   position: relative;
   width: 100%;
-  min-height: 320px;
+  min-height: 360px;
   transition: transform 0.7s;
   transform-style: preserve-3d;
 }
@@ -391,12 +407,23 @@ function onGoalCompleted() {
   flex-direction: column;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.1rem;
+  padding: 1.25rem;
   border-radius: 1rem;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   border: 1px solid #e2e8f0;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+}
+
+.goal-flip-face.complete {
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.12), 0 16px 40px rgba(18, 56, 45, 0.15);
+}
+
+.goal-flip-card.goal-add-placeholder,
+.goal-flip-card {
+  min-height: 320px;
 }
 
 .goal-flip-front {
@@ -411,9 +438,33 @@ function onGoalCompleted() {
 .goal-item-top,
 .goal-back-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
+}
+
+.goal-actions-start {
+  justify-content: flex-start;
+}
+
+.goal-actions button.goal-edit-btn,
+.goal-actions button.goal-delete-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: none;
+  transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
+}
+
+.goal-actions button.goal-edit-btn:hover,
+.goal-actions button.goal-delete-btn:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.goal-actions button.goal-delete-btn {
+  color: #b91c1c;
 }
 
 .goal-item-cell {
@@ -423,10 +474,61 @@ function onGoalCompleted() {
   gap: 0.5rem;
 }
 
+.goal-front-title {
+  font-size: 1.75rem;
+  line-height: 1.05;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  text-align: center;
+}
+
+.goal-front-title.priority-high {
+  color: #ef4444;
+}
+
+.goal-front-title.priority-medium {
+  color: #d97706;
+}
+
+.goal-front-title.priority-low {
+  color: #15803d;
+}
+
+.goal-item-name.priority-high {
+  color: #b91c1c;
+}
+
+.goal-item-name.priority-medium {
+  color: #d97706;
+}
+
+.goal-item-name.priority-low {
+  color: #15803d;
+}
+
+.goal-front-title.priority-medium,
+.goal-item-name.priority-medium {
+  color: #d97706;
+}
+
+.goal-front-title.priority-low,
+.goal-item-name.priority-low {
+  color: #15803d;
+}
+
 .goal-item-name {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #0f172a;
+}
+
+.goal-progress-percentage {
+  text-align: center;
+  font-weight: 800;
+  font-size: 2.2rem;
+  line-height: 1;
+  color: #13b38e;
 }
 
 .goal-complete-badge {
@@ -450,17 +552,20 @@ function onGoalCompleted() {
   font-weight: 700;
 }
 
-.priority-high {
+.priority-pill.priority-high,
+.goal-section-priority-badge.priority-high {
   background: #fee2e2;
   color: #b91c1c;
 }
 
-.priority-medium {
+.priority-pill.priority-medium,
+.goal-section-priority-badge.priority-medium {
   background: #fef3c7;
   color: #b45309;
 }
 
-.priority-low {
+.priority-pill.priority-low,
+.goal-section-priority-badge.priority-low {
   background: #dcfce7;
   color: #15803d;
 }
@@ -475,19 +580,56 @@ function onGoalCompleted() {
 .goal-progress-cell {
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.75rem;
 }
 
 .goal-progress-percentage {
   text-align: center;
   font-weight: 700;
-  font-size: 2.5rem;
+  font-size: 2rem;
   line-height: 1;
-  color: #13b38e;
+  color: #334155;
 }
 
-.goal-progress-percentage-back {
-  font-size: 2.2rem;
+.goal-progress-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.goal-complete-center {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  background: rgba(19, 179, 142, 0.12);
+  color: #0f8b6e;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+}
+
+.goal-progress-track {
+  width: 100%;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f1f5f9, #e2e8f0);
+  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+.goal-progress-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #0f766e 0%, #115e59 100%);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.35);
 }
 
 .goal-card-footer {
@@ -497,6 +639,32 @@ function onGoalCompleted() {
   gap: 0.75rem;
   font-size: 0.88rem;
   color: #64748b;
+  flex-wrap: wrap;
+}
+
+.goal-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: rgba(16, 185, 129, 0.14);
+  color: #0f766e;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.16s ease, transform 0.16s ease;
+}
+
+.goal-detail-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  transform: translateY(-1px);
+}
+
+.goal-detail-icon {
+  display: inline-block;
+  font-size: 1rem;
 }
 
 .goal-actions {
@@ -509,6 +677,64 @@ function onGoalCompleted() {
 .goal-budget-label {
   font-size: 0.88rem;
   color: #64748b;
+}
+
+.goal-add-placeholder .goal-flip-face {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  padding: 1.25rem;
+  background: rgba(226, 232, 240, 0.75);
+  border: 1px dashed rgba(148, 163, 184, 0.7);
+  border-radius: 1rem;
+  box-shadow: none;
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  padding: 1.5rem;
+}
+
+.placeholder-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(34, 197, 94, 0.18);
+  color: #16a34a;
+  font-size: 2.2rem;
+}
+
+.goal-add-placeholder h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.goal-add-placeholder p {
+  margin: 0;
+  color: #475569;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.goal-add-placeholder .btn-ghost {
+  padding: 1rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 700;
 }
 
 .goal-progress-labels {
@@ -524,16 +750,19 @@ function onGoalCompleted() {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
+  flex: 1;
 }
 
 .goal-budget-stat {
-  padding: 0.9rem;
-  border-radius: 0.85rem;
-  background: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(148, 163, 184, 0.15);
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.18);
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 110px;
 }
 
 .goal-budget-stat strong {
@@ -575,8 +804,30 @@ function onGoalCompleted() {
   background: linear-gradient(180deg, rgba(30, 51, 35, 0.98) 0%, rgba(24, 42, 28, 0.97) 100%);
 }
 
-[data-theme="dark"] .goal-item-name {
+[data-theme="dark"] .goal-front-title.priority-high,
+[data-theme="dark"] .goal-item-name.priority-high {
+  color: #f87171;
+}
+
+[data-theme="dark"] .goal-front-title.priority-medium,
+[data-theme="dark"] .goal-item-name.priority-medium {
+  color: #fdba74;
+}
+
+[data-theme="dark"] .goal-front-title.priority-low,
+[data-theme="dark"] .goal-item-name.priority-low {
+  color: #6ee7b7;
+}
+
+[data-theme="dark"] .goal-item-name,
+[data-theme="dark"] .goal-item-name,
+[data-theme="dark"] .goal-front-title {
   color: var(--text);
+}
+
+[data-theme="dark"] .goal-front-title.priority-low,
+[data-theme="dark"] .goal-item-name.priority-low {
+  color: #7dd3fc;
 }
 
 [data-theme="dark"] .goal-description-cell {
@@ -599,17 +850,20 @@ function onGoalCompleted() {
   color: var(--text);
 }
 
-[data-theme="dark"] .priority-high {
+[data-theme="dark"] .priority-pill.priority-high,
+[data-theme="dark"] .goal-section-priority-badge.priority-high {
   background: rgba(185, 28, 28, 0.18);
   color: #fca5a5;
 }
 
-[data-theme="dark"] .priority-medium {
+[data-theme="dark"] .priority-pill.priority-medium,
+[data-theme="dark"] .goal-section-priority-badge.priority-medium {
   background: rgba(180, 83, 9, 0.18);
   color: #fcd34d;
 }
 
-[data-theme="dark"] .priority-low {
+[data-theme="dark"] .priority-pill.priority-low,
+[data-theme="dark"] .goal-section-priority-badge.priority-low {
   background: rgba(21, 128, 61, 0.18);
   color: #86efac;
 }

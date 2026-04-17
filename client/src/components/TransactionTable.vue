@@ -1,11 +1,6 @@
 <template>
   <div class="transaction-card">
-    <div class="transaction-card-header">
-      <div>
-        <p class="panel-kicker">Activity</p>
-        <h2 class="transaction-title">Recent Transactions</h2>
-        <p class="transaction-subtitle">Track expenses and income at a glance.</p>
-      </div>
+    <div class="transaction-action-bar">
       <button class="btn btn-primary btn-sm transaction-add-btn" @click="$emit('add')">
         Add transaction
       </button>
