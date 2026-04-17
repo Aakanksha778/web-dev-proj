@@ -46,12 +46,40 @@
             </div>
           </div>
 
-          <div class="mb-4">
+          <div class="mb-4 category-dropdown">
             <label class="form-label">Category</label>
-            <input v-model="form.category" type="text" class="form-control" placeholder="e.g. Food, Transport, Income" required list="category-suggestions" />
-            <datalist id="category-suggestions">
-              <option v-for="c in categories" :key="c" :value="c" />
-            </datalist>
+            <div class="category-input-wrap">
+              <input
+                ref="categoryInputRef"
+                v-model="categoryQuery"
+                type="text"
+                class="form-control"
+                placeholder="Choose a category"
+                required
+                @focus="openCategoryDropdown"
+                @input="onCategoryQueryInput"
+                @keydown.down.prevent="focusNextCategoryOption"
+                @keydown.up.prevent="focusPrevCategoryOption"
+                @keydown.enter.prevent="chooseHighlightedCategory"
+                @blur="closeCategoryDropdown"
+              />
+              <span class="category-toggle">▾</span>
+            </div>
+            <div v-show="dropdownOpen" :class="['category-options', { 'open-up': openUpwards }]">
+              <button
+                v-for="(option, index) in filteredCategories"
+                :key="option"
+                type="button"
+                class="category-option"
+                :class="{ selected: option === form.category, highlighted: index === highlightedIndex }"
+                @mousedown.prevent="selectCategory(option)"
+              >
+                {{ option }}
+              </button>
+              <div v-if="filteredCategories.length === 0" class="category-option empty">
+                No matching categories
+              </div>
+            </div>
           </div>
 
           <div class="d-flex gap-2 justify-content-end">
@@ -67,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import api from '../services/api'
 
 const props = defineProps({
@@ -76,7 +104,37 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'saved'])
 
-const categories = ['Food', 'Transport', 'Entertainment', 'Health', 'Utilities', 'Dining', 'Savings', 'Income', 'Other']
+const expenseCategories = [
+  'Education (tuition, books, courses)',
+  'Entertainment (streaming, movies, concerts, hobbies)',
+  'Food & Dining (groceries, restaurants, coffee)',
+  'Gifts & Donations',
+  'Health (pharmacy, gym, doctor visits)',
+  'Housing (rent, mortgage, utilities, insurance)',
+  'Personal Care (haircuts, skincare)',
+  'Pets (food, vet, grooming)',
+  'Shopping (clothing, electronics, household goods)',
+  'Subscriptions (software, memberships)',
+  'Transport (gas, transit, parking, car maintenance)',
+  'Travel (flights, hotels, vacation)',
+]
+
+const incomeCategories = [
+  'Business income',
+  'Dividends / Investments',
+  'Freelance / Side hustle',
+  'Gifts received',
+  'Government benefits (e.g. tax refund, pension)',
+  'Interest (savings account)',
+  'Rental income',
+  'Salary / Wages',
+]
+
+const neutralCategories = [
+  'Bank transfer',
+  'Credit card payment',
+  'Savings deposit/withdrawal',
+]
 
 const defaultForm = () => ({
   description: '',
@@ -88,18 +146,50 @@ const defaultForm = () => ({
 })
 
 const form    = ref(defaultForm())
+const categoryQuery = ref('')
+const dropdownOpen = ref(false)
+const openUpwards = ref(false)
+const highlightedIndex = ref(0)
 const loading = ref(false)
 const error   = ref('')
+const categoryInputRef = ref(null)
+
+const categoryOptions = computed(() => {
+  const base = form.value.type === 'income'
+    ? [...incomeCategories, ...neutralCategories]
+    : [...expenseCategories, ...neutralCategories]
+  return base.sort((a, b) => a.localeCompare(b))
+})
+
+const filteredCategories = computed(() => {
+  const query = categoryQuery.value.trim().toLowerCase()
+  if (!query) return categoryOptions.value
+  return categoryOptions.value.filter((option) => option.toLowerCase().includes(query))
+})
+
+watch(() => form.value.type, () => {
+  if (!categoryOptions.value.includes(form.value.category)) {
+    form.value.category = ''
+    categoryQuery.value = ''
+  }
+})
 
 // Reset form whenever modal opens
 watch(() => props.show, (val) => {
   if (val) {
     form.value = defaultForm()
+    categoryQuery.value = ''
+    dropdownOpen.value = false
+    highlightedIndex.value = 0
     error.value = ''
   }
 })
 
 async function handleSubmit() {
+  if (!categoryOptions.value.includes(categoryQuery.value.trim())) {
+    form.value.category = categoryQuery.value.trim()
+  }
+
   error.value = ''
   loading.value = true
   try {
@@ -113,6 +203,67 @@ async function handleSubmit() {
   } finally {
     loading.value = false
   }
+}
+
+function openCategoryDropdown() {
+  dropdownOpen.value = true
+  updateDropdownDirection()
+}
+
+function closeCategoryDropdown() {
+  setTimeout(() => {
+    dropdownOpen.value = false
+  }, 120)
+}
+
+function onCategoryQueryInput() {
+  dropdownOpen.value = true
+  highlightedIndex.value = 0
+  form.value.category = categoryQuery.value
+  updateDropdownDirection()
+}
+
+function updateDropdownDirection() {
+  requestAnimationFrame(() => {
+    const input = categoryInputRef.value
+    if (!input || typeof window === 'undefined') return
+
+    const rect = input.getBoundingClientRect()
+    const dropdownHeight = 10 * 40 // estimate 10 options height
+    const availableBelow = window.innerHeight - rect.bottom
+    const availableAbove = rect.top
+
+    openUpwards.value = availableBelow < dropdownHeight && availableAbove > dropdownHeight
+  })
+}
+
+function selectCategory(option) {
+  form.value.category = option
+  categoryQuery.value = option
+  dropdownOpen.value = false
+}
+
+function chooseHighlightedCategory() {
+  if (!filteredCategories.value.length) return
+  selectCategory(filteredCategories.value[highlightedIndex.value])
+}
+
+function focusNextCategoryOption() {
+  if (!dropdownOpen.value) {
+    dropdownOpen.value = true
+    return
+  }
+  if (!filteredCategories.value.length) return
+  highlightedIndex.value = (highlightedIndex.value + 1) % filteredCategories.value.length
+}
+
+function focusPrevCategoryOption() {
+  if (!dropdownOpen.value) {
+    dropdownOpen.value = true
+    return
+  }
+  if (!filteredCategories.value.length) return
+  highlightedIndex.value = (highlightedIndex.value - 1 + filteredCategories.value.length) % filteredCategories.value.length
 }
 </script>
 
@@ -183,5 +334,73 @@ async function handleSubmit() {
 
 .modal-close-btn:hover {
   color: #0f172a;
+}
+
+.category-dropdown {
+  position: relative;
+}
+
+.category-input-wrap {
+  position: relative;
+}
+
+.category-input-wrap .form-control {
+  width: 100%;
+  padding-right: 2.5rem;
+}
+
+.category-toggle {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+  font-size: 0.9rem;
+}
+
+.category-options {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  bottom: auto;
+  max-height: 10rem;
+  overflow-y: auto;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 0.85rem;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+  z-index: 20;
+}
+
+.category-options.open-up {
+  top: auto;
+  bottom: calc(100% + 0.5rem);
+}
+
+.category-option {
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: 0.85rem 1rem;
+  background: transparent;
+  border: none;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.category-option:hover,
+.category-option.highlighted {
+  background: #f8fafc;
+}
+
+.category-option.selected {
+  font-weight: 700;
+}
+
+.category-option.empty {
+  color: #64748b;
+  cursor: default;
 }
 </style>

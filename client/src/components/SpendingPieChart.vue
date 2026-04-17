@@ -9,10 +9,11 @@
     </div>
 
     <div class="pie-wrapper d-flex justify-content-center align-items-center">
-      <div class="pie-chart" :style="{ background: gradient }"></div>
-      <div class="pie-label">
-        <span class="fs-4 fw-semibold">{{ totalLabel }}</span>
-        <p class="mb-0 text-muted small">This month</p>
+      <div class="pie-chart" :style="{ background: gradient }">
+        <div class="pie-center">
+          <span class="fs-4 fw-semibold">{{ totalLabel }}</span>
+          <p class="mb-0 text-muted small">This month</p>
+        </div>
       </div>
     </div>
 
@@ -57,24 +58,44 @@ const gradient = computed(() => {
 
 <style scoped>
 .pie-wrapper {
-  min-height: 180px;
+  min-height: 240px;
   position: relative;
 }
 
 .pie-chart {
-  width: 150px;
-  height: 150px;
+  width: 190px;
+  height: 190px;
   border-radius: 50%;
-  box-shadow: inset 0 0 0 40px #f6f8fb;
-  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
-.pie-label {
+.pie-chart::after {
+  content: '';
   position: absolute;
-  inset: auto auto 1rem auto;
-  width: 100%;
+  inset: 24%;
+  border-radius: 50%;
+  background: var(--bg, #ffffff);
+  box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.75);
+}
+
+.pie-center {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  left: 0;
+}
+
+.pie-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
 }
 
 .pie-legend {
@@ -104,5 +125,18 @@ const gradient = computed(() => {
 
 .legend-pct {
   font-size: 0.75rem;
+}
+
+.pie-center .text-muted {
+  color: #6b7280;
+}
+
+[data-theme="dark"] .pie-center .text-muted {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .legend-name,
+[data-theme="dark"] .legend-pct {
+  color: var(--muted);
 }
 </style>
