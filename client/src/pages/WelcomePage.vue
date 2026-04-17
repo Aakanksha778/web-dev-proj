@@ -3,7 +3,7 @@
     <div class="welcome-card" :class="{ 'welcome-card--visible': visible }">
       <div class="welcome-icon">👋</div>
       <p class="welcome-kicker">You're in</p>
-      <h1 class="welcome-title">Welcome back, {{ firstName }}.</h1>
+      <h1 class="welcome-title">{{ isNewUser ? 'Welcome' : 'Welcome back' }}, {{ firstName }}.</h1>
       <p class="welcome-subtitle">Taking you to your dashboard…</p>
       <div class="welcome-bar">
         <div class="welcome-bar-fill" :style="{ width: `${progress}%` }"></div>
@@ -14,15 +14,17 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '../stores/auth'
 
 const router = useRouter()
+const route = useRoute()
 const { user } = useAuth()
 
 const visible  = ref(false)
 const progress = ref(0)
 
+const isNewUser = computed(() => route.query.isNew === 'true')
 const firstName = computed(() => user.value?.name?.split(' ')[0] ?? 'there')
 
 onMounted(() => {

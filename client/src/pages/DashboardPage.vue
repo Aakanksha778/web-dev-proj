@@ -3,14 +3,13 @@
     <div class="dashboard-hero">
       <div>
         <p class="dashboard-kicker">Financial overview</p>
-        <h1 class="dashboard-title">Welcome back, {{ user?.name?.split(' ')[0] ?? 'there' }}.</h1>
+        <h1 class="dashboard-title">Welcome {{ user?.name?.split(' ')[0] ?? 'there' }}.</h1>
         <p class="dashboard-subtitle">
           Here's a quick look at your balances, budgets, and savings progress for this month.
         </p>
       </div>
 
       <div class="dashboard-actions">
-        <button class="btn btn-ghost">Export report</button>
         <button class="btn btn-primary" @click="showModal = true">Add transaction</button>
       </div>
     </div>

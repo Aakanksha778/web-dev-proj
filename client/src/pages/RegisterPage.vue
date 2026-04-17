@@ -217,7 +217,7 @@ async function handleRegister() {
   try {
     await api.post('/auth/register', form.value)
     await checkAuth()
-    router.push('/welcome')
+    router.push('/welcome?isNew=true')
   } catch (err) {
     error.value = err.response?.data?.error
       || err.response?.data?.errors?.[0]?.msg

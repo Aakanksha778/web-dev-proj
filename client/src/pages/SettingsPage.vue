@@ -161,32 +161,12 @@
 
           <div class="form-check form-switch mb-3">
             <input
-              v-model="prefs.auto_budget"
-              class="form-check-input"
-              type="checkbox"
-              id="autobudget"
-            />
-            <label class="form-check-label" for="autobudget">Auto-adjust budgets</label>
-          </div>
-
-          <div class="form-check form-switch mb-3">
-            <input
               v-model="darkMode"
               class="form-check-input"
               type="checkbox"
               id="darkmode"
             />
             <label class="form-check-label" for="darkmode">Dark mode</label>
-          </div>
-
-          <div class="form-check form-switch mb-3">
-            <input
-              v-model="appPrefs.compact_mode"
-              class="form-check-input"
-              type="checkbox"
-              id="compactmode"
-            />
-            <label class="form-check-label" for="compactmode">Compact dashboard layout</label>
           </div>
 
           <div class="form-check form-switch mb-4">
@@ -197,26 +177,6 @@
               id="showtips"
             />
             <label class="form-check-label" for="showtips">Show smart saving tips</label>
-          </div>
-
-          <div class="row g-3">
-            <div class="col-12 col-md-6">
-              <label class="form-label">Default landing page</label>
-              <select v-model="appPrefs.default_landing" class="form-select">
-                <option value="Dashboard">Dashboard</option>
-                <option value="Budgets">Budgets</option>
-                <option value="Goals">Goals</option>
-                <option value="Transactions">Transactions</option>
-              </select>
-            </div>
-
-            <div class="col-12 col-md-6">
-              <label class="form-label">Week starts on</label>
-              <select v-model="appPrefs.week_start" class="form-select">
-                <option value="Sunday">Sunday</option>
-                <option value="Monday">Monday</option>
-              </select>
-            </div>
           </div>
 
           <div class="mt-4">

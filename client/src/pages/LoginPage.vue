@@ -205,7 +205,7 @@ async function handleLogin() {
   try {
     await api.post('/auth/login', form.value)
     await checkAuth()
-    router.push('/welcome')
+    router.push('/welcome?isNew=false')
   } catch (err) {
     error.value = err.response?.data?.error || 'Login failed. Please try again.'
   } finally {
