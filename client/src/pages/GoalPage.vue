@@ -348,7 +348,7 @@ function onGoalCompleted() {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text);
 }
 
 .priority-pill.priority-high,
@@ -411,8 +411,8 @@ function onGoalCompleted() {
   border-radius: 1rem;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
@@ -427,12 +427,12 @@ function onGoalCompleted() {
 }
 
 .goal-flip-front {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  background: linear-gradient(180deg, var(--panel-strong) 0%, var(--bg-elevated) 100%);
 }
 
 .goal-flip-back {
   transform: rotateY(180deg);
-  background: linear-gradient(180deg, #f8fffb 0%, #eefaf4 100%);
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-soft) 100%);
 }
 
 .goal-item-top,
@@ -449,17 +449,17 @@ function onGoalCompleted() {
 
 .goal-actions button.goal-edit-btn,
 .goal-actions button.goal-delete-btn {
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #0f172a;
+  border: 1px solid var(--border);
+  background: var(--panel-strong);
+  color: var(--text);
   box-shadow: none;
   transition: border-color 0.16s ease, background 0.16s ease, transform 0.16s ease;
 }
 
 .goal-actions button.goal-edit-btn:hover,
 .goal-actions button.goal-delete-btn:hover {
-  border-color: #94a3b8;
-  background: #f8fafc;
+  border-color: var(--accent);
+  background: var(--bg-elevated);
   transform: translateY(-1px);
 }
 
@@ -478,7 +478,7 @@ function onGoalCompleted() {
   font-size: 1.75rem;
   line-height: 1.05;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text);
   margin: 0;
   text-align: center;
 }
@@ -520,7 +520,7 @@ function onGoalCompleted() {
 .goal-item-name {
   font-size: 1rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text);
 }
 
 .goal-progress-percentage {
@@ -573,7 +573,7 @@ function onGoalCompleted() {
 .goal-description-cell {
   margin: 0;
   min-height: 44px;
-  color: #475569;
+  color: var(--muted);
   line-height: 1.5;
 }
 
@@ -616,10 +616,10 @@ function onGoalCompleted() {
   width: 100%;
   height: 14px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #f1f5f9, #e2e8f0);
-  box-shadow: inset 0 2px 4px rgba(15, 23, 42, 0.08);
+  background: var(--bg-elevated);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  border: 1px solid rgba(148, 163, 184, 0.45);
+  border: 1px solid var(--border);
 }
 
 .goal-progress-fill {
@@ -638,7 +638,7 @@ function onGoalCompleted() {
   justify-content: space-between;
   gap: 0.75rem;
   font-size: 0.88rem;
-  color: #64748b;
+  color: var(--muted);
   flex-wrap: wrap;
 }
 
@@ -647,8 +647,8 @@ function onGoalCompleted() {
   align-items: center;
   gap: 0.4rem;
   border: none;
-  background: rgba(16, 185, 129, 0.14);
-  color: #0f766e;
+  background: rgba(82, 183, 136, 0.14);
+  color: var(--accent);
   padding: 0.75rem 1rem;
   border-radius: 999px;
   font-size: 0.95rem;
@@ -658,7 +658,7 @@ function onGoalCompleted() {
 }
 
 .goal-detail-btn:hover {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(82, 183, 136, 0.2);
   transform: translateY(-1px);
 }
 
@@ -676,7 +676,7 @@ function onGoalCompleted() {
 .goal-flip-hint,
 .goal-budget-label {
   font-size: 0.88rem;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .goal-add-placeholder .goal-flip-face {
@@ -688,8 +688,8 @@ function onGoalCompleted() {
   height: 100%;
   min-height: 100%;
   padding: 1.25rem;
-  background: rgba(226, 232, 240, 0.75);
-  border: 1px dashed rgba(148, 163, 184, 0.7);
+  background: var(--bg-elevated);
+  border: 1px dashed var(--border);
   border-radius: 1rem;
   box-shadow: none;
 }
@@ -712,8 +712,8 @@ function onGoalCompleted() {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: rgba(34, 197, 94, 0.18);
-  color: #16a34a;
+  background: rgba(82, 183, 136, 0.18);
+  color: var(--accent);
   font-size: 2.2rem;
 }
 
@@ -721,12 +721,12 @@ function onGoalCompleted() {
   margin: 0;
   font-size: 1.4rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text);
 }
 
 .goal-add-placeholder p {
   margin: 0;
-  color: #475569;
+  color: var(--muted);
   font-size: 0.98rem;
   line-height: 1.6;
 }
@@ -743,7 +743,7 @@ function onGoalCompleted() {
   justify-content: space-between;
   gap: 0.75rem;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .goal-budget-stats {
@@ -756,8 +756,8 @@ function onGoalCompleted() {
 .goal-budget-stat {
   padding: 1rem;
   border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -767,7 +767,7 @@ function onGoalCompleted() {
 
 .goal-budget-stat strong {
   font-size: 1rem;
-  color: #0f172a;
+  color: var(--text);
 }
 
 @media (max-width: 768px) {
