@@ -209,66 +209,47 @@
         </div>
 
         <div class="comparison-list">
-          <div v-for="item in analysisRows" :key="item.id" class="comparison-row">
-            <div>
-              <strong>{{ item.name }}</strong>
-              <span>Budget {{ formatCurrency(item.planned) }}</span>
+          <div v-for="item in analysisRows" :key="item.id" class="budget-comparison-card">
+            <div class="card-header-section">
+              <h3 class="card-title">{{ item.name }}</h3>
+              <span :class="['card-status-badge', item.deltaClass]">
+                {{ item.deltaText }}
+              </span>
             </div>
-            <div class="comparison-right">
-              <strong>{{ formatCurrency(item.actual) }}</strong>
-              <span :class="item.deltaClass">{{ item.deltaText }}</span>
+
+            <div class="card-metrics-grid">
+              <div class="metric-block">
+                <span class="metric-label">Budget Limit</span>
+                <div class="metric-value">{{ formatCurrency(item.planned) }}</div>
+              </div>
+
+              <div class="metric-block">
+                <span class="metric-label">Actual Spent</span>
+                <div class="metric-value">{{ formatCurrency(item.actual) }}</div>
+              </div>
+
+              <div class="metric-block">
+                <span class="metric-label">Remaining</span>
+                <div class="metric-value" :class="item.deltaClass">
+                  {{ item.deltaText }}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div class="budget-panel history-panel">
-      <div class="chart-header history-header">
-        <div>
-          <p class="panel-kicker">Past performance</p>
-          <h2>Review previous months</h2>
-        </div>
-        <div class="history-tabs">
-          <button
-            v-for="option in [1, 3, 6]"
-            :key="option"
-            class="history-tab"
-            :class="{ active: selectedHistoryWindow === option }"
-            @click="selectedHistoryWindow = option"
-          >
-            {{ option }} {{ option === 1 ? 'month' : 'months' }}
-          </button>
-        </div>
-      </div>
-
-      <div class="history-summary">
-        <div class="summary-chip">
-          <span>Average adherence</span>
-          <strong>{{ averageAdherence.toFixed(0) }}%</strong>
-        </div>
-        <div class="summary-chip">
-          <span>Average monthly spend</span>
-          <strong>{{ formatCurrency(averageHistorySpend) }}</strong>
-        </div>
-        <div class="summary-chip">
-          <span>Best month</span>
-          <strong>{{ bestHistoryMonth }}</strong>
-        </div>
-      </div>
-
-      <div class="history-list">
-        <div v-for="month in visibleHistory" :key="month.label" class="history-row">
-          <div>
-            <strong>{{ month.label }}</strong>
-            <span>{{ month.note }}</span>
-          </div>
-          <div class="history-metrics">
-            <span>Spent {{ formatCurrency(month.actual) }}</span>
-            <span>Budget {{ formatCurrency(month.planned) }}</span>
-            <span :class="month.adherence >= 100 ? 'positive-text' : 'warning-text'">
-              {{ month.adherence.toFixed(0) }}% adherence
-            </span>
+            <div class="card-progress-section">
+              <div class="progress-bar-container">
+                <div class="progress-bar-track">
+                  <div
+                    class="progress-bar-fill"
+                    :style="{ width: Math.min((item.actual / item.planned) * 100, 100) + '%' }"
+                    :class="{ 'progress-bar-over': item.actual > item.planned }"
+                  ></div>
+                </div>
+              </div>
+              <div class="progress-percentage">
+                {{ item.planned > 0 ? Math.round((item.actual / item.planned) * 100) : 0 }}% used
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -1032,6 +1013,166 @@ h2 {
   width: 100%;
 }
 
+/* Budget Comparison Cards */
+.comparison-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.budget-comparison-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.budget-comparison-card:hover {
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+  border-color: #cbd5e1;
+}
+
+.card-header-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.card-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.card-status-badge.positive-text {
+  background: rgba(21, 128, 61, 0.12);
+  color: #15803d;
+}
+
+.card-status-badge.warning-text {
+  background: rgba(180, 83, 9, 0.12);
+  color: #b45309;
+}
+
+.card-status-badge.danger-text {
+  background: rgba(185, 28, 28, 0.12);
+  color: #b91c1c;
+}
+
+.card-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.metric-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+
+.metric-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.metric-value.positive-text {
+  color: #15803d;
+}
+
+.metric-value.warning-text {
+  color: #b45309;
+}
+
+.metric-value.danger-text {
+  color: #b91c1c;
+}
+
+.card-progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.progress-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.progress-bar-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+  transition: width 0.3s ease;
+  border-radius: 999px;
+}
+
+.progress-bar-fill.progress-bar-over {
+  background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+}
+
+.progress-percentage {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  text-align: right;
+}
+
+@media (max-width: 1100px) {
+  .card-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .card-header-section {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .card-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .budget-comparison-card {
+    padding: 1rem;
+  }
+}
+
 @media (max-width: 1100px) {
   .budget-layout,
   .second-row,
@@ -1104,9 +1245,66 @@ h2 {
 
 [data-theme="dark"] .legend-item,
 [data-theme="dark"] .comparison-row,
-[data-theme="dark"] .history-row {
+[data-theme="dark"] .history-row,
+[data-theme="dark"] .budget-comparison-card {
   background: var(--bg-elevated);
   border-color: var(--border);
+}
+
+[data-theme="dark"] .budget-comparison-card {
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .budget-comparison-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .card-title {
+  color: var(--text);
+}
+
+[data-theme="dark"] .card-status-badge.positive-text {
+  background: rgba(110, 231, 183, 0.15);
+  color: #6ee7b7;
+}
+
+[data-theme="dark"] .card-status-badge.warning-text {
+  background: rgba(253, 186, 116, 0.15);
+  color: #fdba74;
+}
+
+[data-theme="dark"] .card-status-badge.danger-text {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+[data-theme="dark"] .metric-label {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .metric-value {
+  color: var(--text);
+}
+
+[data-theme="dark"] .metric-value.positive-text {
+  color: #6ee7b7;
+}
+
+[data-theme="dark"] .metric-value.warning-text {
+  color: #fdba74;
+}
+
+[data-theme="dark"] .metric-value.danger-text {
+  color: #f87171;
+}
+
+[data-theme="dark"] .progress-bar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .progress-percentage {
+  color: var(--muted);
 }
 
 [data-theme="dark"] .legend-text strong,

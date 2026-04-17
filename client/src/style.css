@@ -113,6 +113,11 @@ body[data-theme="dark"] {
   color: #fcd34d;
 }
 
+[data-theme="dark"] .transaction-action-bar {
+  background: var(--panel-strong);
+  border-bottom-color: var(--border);
+}
+
 [data-theme="dark"] .form-control,
 [data-theme="dark"] .form-select {
   background-color: var(--bg-elevated);
