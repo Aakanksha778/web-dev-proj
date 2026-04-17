@@ -1,10 +1,17 @@
 <template>
   <section>
-    <div class="page-header">
+    <div class="page-header page-header-with-action">
       <div>
         <h1>Goals</h1>
         <p>Track your milestones and stay motivated with measurable progress updates.</p>
       </div>
+      <button
+        type="button"
+        class="btn btn-primary"
+        @click="showAddGoalModal = true"
+      >
+        + Add Goal
+      </button>
     </div>
 
     <div class="goal-card">
@@ -114,23 +121,6 @@
                       <span class="goal-budget-label">Progress</span>
                       <strong>{{ goal.progress }}%</strong>
                     </div>
-                  </div>
-                </article>
-              </div>
-            </div>
-
-            <div
-              v-if="group.goals.length % 2 === 1"
-              class="goal-flip-card goal-add-placeholder"
-              @click="showAddGoalModal = true"
-            >
-              <div class="goal-flip-card-inner">
-                <article class="goal-flip-face goal-flip-empty">
-                  <div class="placeholder-content">
-                    <span class="placeholder-icon">＋</span>
-                    <h3>Add another goal</h3>
-                    <p>Create a second milestone and keep your plan balanced.</p>
-                    <button type="button" class="btn btn-ghost">Add goal</button>
                   </div>
                 </article>
               </div>
